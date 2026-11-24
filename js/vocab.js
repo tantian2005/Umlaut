@@ -5,10 +5,15 @@
   var ADJ_END = ['', 'e', 'en', 'er', 'es', 'em'];
   var INSEP = /^(be|ge|er|ver|zer|ent|emp|miss|über|unter|wider|hinter)/;
 
-  var list = [], byId = {}, nounMap = {}, otherMap = {};
+  var list = [], byId = {}, nounMap = {}, otherMap = {}, splitMap = {};
 
   function addNoun(form, entry) { if (form && !nounMap[form]) nounMap[form] = entry; }
   function addOther(form, entry) { if (form && form.length > 2 && !otherMap[form]) otherMap[form] = entry; }
+  // separable verbs: a split form (er geht … zurück) only counts if the prefix is in the same sentence
+  function addSplit(form, entry, prefix) {
+    if (!form || form.length < 3) return;
+    (splitMap[form] || (splitMap[form] = [])).push({ entry: entry, prefix: prefix });
+  }
 
   function build(text) {
     text.split('\n').forEach(function (line) {
@@ -43,7 +48,11 @@
           ADJ_END.forEach(function (e) { forms.push(p + e); });
         });
         extra.forEach(function (x) { forms.push(x); ADJ_END.forEach(function (e) { if (e) forms.push(x + e); }); });
-        forms.forEach(function (x) { addOther(x.toLowerCase(), entry); });
+        forms.forEach(function (x) {
+          x = x.toLowerCase();
+          if (prefix && x.indexOf(prefix) !== 0) addSplit(x, entry, prefix);
+          else addOther(x, entry);
+        });
       } else if (type === 'a') {
         var a = lemma.toLowerCase();
         ADJ_END.forEach(function (e) {
@@ -60,10 +69,19 @@
 
   function find(text) {
     var seen = {}, out = [];
-    String(text || '').split(/[^A-Za-zÄÖÜäöüß]+/).forEach(function (t) {
+    text = String(text || '');
+    var tokens = text.split(/[^A-Za-zÄÖÜäöüß]+/).filter(Boolean);
+    // separated prefixes stand at the end of a clause: "… ging die Zahl zurück." / "Ich rufe dich an, sobald …"
+    var clauseEnd = {}, re = /([A-Za-zÄÖÜäöüß]+)(?=\s*(?:[,.;:!?)]|$))/g, m;
+    while ((m = re.exec(text))) clauseEnd[m[1].toLowerCase()] = true;
+    var lower = clauseEnd;
+    function add(e) { if (e && !seen[e.id]) { seen[e.id] = true; out.push(e); } }
+    tokens.forEach(function (t) {
       if (t.length < 3) return;
-      var e = nounMap[t] || otherMap[t.toLowerCase()];
-      if (e && !seen[e.id]) { seen[e.id] = true; out.push(e); }
+      var l = t.toLowerCase();
+      var e = nounMap[t] || otherMap[l];
+      if (e) return add(e);
+      (splitMap[l] || []).forEach(function (s) { if (lower[s.prefix]) add(s.entry); });
     });
     return out;
   }

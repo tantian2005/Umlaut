@@ -14,8 +14,8 @@ o 这种材料可以回收。 | Dieses Material lässt sich recyceln. # sich las
 c Die Anträge ___ bereits geprüft worden. | sind | haben | werden | wurden # Perfekt 被动：sind … worden。
 i Der Vertrag hätte schon letzte Woche unterschrieben werden ___. | müssen # 双不定式：unterschrieben werden müssen。
 c Die Unterlagen sind bis zum 30. Juni ___. | einzureichen | eingereicht werden | zu eingereicht | einreichen # sein + zu + 不定式（可分：ein-zu-reichen）。
-i Der Raum ist nicht ___. (heizen, -bar) | heizbar | heizen, -bar # heizbar = kann geheizt werden。
-c Als ich ankam, ___ die Tür schon abgeschlossen. | war | wurde | hatte | ist # 过去的结果状态 → war。
+i Der Raum ist nicht ___. | heizbar | heizen, -bar # heizbar = kann geheizt werden。
+c Als ich ankam, ___ die Tür schon abgeschlossen. | war | würde | hatte | ist # 过去的结果状态 → war。
 `);
 
   X('b2-infinitiv', `
@@ -44,7 +44,7 @@ c Er tat so, als ___ er die E-Mail nie bekommen. | hätte | wäre | würde | hat
 i An Ihrer Stelle ___ ich mich früher beworben. | hätte # sich bewerben 用 haben。
 c Fast ___ wir den Flug verpasst. | hätten | wären | würden | haben # 差点 → Fast hätten wir …
 i Wenn es nicht geregnet ___, wären wir an den See gefahren. | hätte # regnen 用 haben。
-c Ich wäre gern mitgekommen, aber ich ___ arbeiten müssen. | hätte | wäre | würde | habe # 过去的必要性 → hätte … müssen。
+c Ich ___ gestern eigentlich arbeiten müssen, aber ich war krank. | hätte | wäre | würde | habe # 本应做但没做 → hätte … müssen（双不定式）。
 `);
 
   X('b2-k1', `
@@ -86,11 +86,11 @@ o 我们讨论了被提出的计划。 | Wir haben den vorgeschlagenen Plan disk
 c {Welches Partizipialattribut passt?} die Probleme, die noch gelöst werden müssen | die noch zu lösenden Probleme | die noch gelösten Probleme | die noch lösenden Probleme | die noch zu gelösten Probleme # 必须被解决 → zu + Partizip I。
 i Die ___ Nachfrage nach Wohnungen treibt die Mieten hoch. | wachsende | wachsen, Partizip I # die + Nom → -e。
 c Der im Jahr 2020 ___ Bericht zeigt deutliche Veränderungen. | veröffentlichte | veröffentlichende | veröffentlicht | veröffentlichten # 被发表 → Partizip II；der + Nom → -e。
-i Wir suchen eine ___ Lösung. (überzeugen, Partizip I) | überzeugende | überzeugen # eine + Akk → -e。
+i Die Professorin hielt einen sehr ___ Vortrag. | überzeugenden | überzeugen, Partizip I # einen + Akk 阳性 → -en。
 `);
 
   X('b2-nominal', `
-c ___ der Erhöhung der Preise kaufen viele weniger. | Wegen | Trotz | Bei | Zur # weil die Preise erhöht wurden → wegen。
+c ___ der Erhöhung der Preise kaufen viele weniger. | Wegen | Trotz | Vor | Zur # weil die Preise erhöht wurden → wegen。
 i Die ___ des Antrags dauert etwa vier Wochen. | Bearbeitung | bearbeiten # bearbeiten → die Bearbeitung。
 i Nach ___ Ankunft in Berlin suchte sie eine Wohnung. | ihrer # nachdem sie angekommen war → nach ihrer Ankunft。
 c ___ Verbesserung der Luftqualität wurden Fahrverbote eingeführt. | Zur | Zum | Bei der | Wegen # um … zu verbessern → zur Verbesserung。
@@ -111,7 +111,7 @@ i Er ___ die Nachricht inzwischen gelesen haben. | dürfte;müsste;wird | Vermut
 c In zehn Jahren ___ wir das Problem hoffentlich gelöst haben. | werden | würden | wurden | haben # Futur II：werden … gelöst haben。
 o 据说新老板很严格。 | Der neue Chef soll sehr streng sein. # soll = 据说。
 o 他一定是忘了约会。 | Er muss den Termin vergessen haben. # muss + Partizip II + haben。
-c Das ___ nicht stimmen! Ich habe ihn eben noch gesehen. | kann | muss | soll | will # 不可能 → kann nicht。
+c Das ___ nicht stimmen! Ich habe ihn eben noch gesehen. | kann | hat | soll | will # 不可能 → kann nicht。
 i Wo ist mein Schlüssel? – Du ___ ihn wohl im Auto gelassen haben. | wirst # Futur II 推测：wirst … gelassen haben。
 c Bis morgen ___ ich den Bericht fertig geschrieben haben. | werde | wurde | würde | habe # Futur II：werde … haben。
 c Die Firma ___ im letzten Jahr hohe Verluste gemacht haben, heißt es in der Zeitung. | soll | will | muss | kann # 据报道 → soll。
@@ -128,7 +128,7 @@ o 你认识那个摄影师吗？ | Kennst du den Fotografen? # -graf → Fotogra
 i Die Polizei hat den ___ befragt. | Zeugen | Zeuge # der Zeuge → den Zeugen。
 c Sie hat den ___ an eine Lösung nicht verloren. | Glauben | Glaube | Glaubens | Glaub # der Glaube → den Glauben。
 c Das ist der Wunsch jedes ___. | Menschen | Mensch | Menschs | Menschens # der Mensch → des Menschen。
-i Der Präsident begrüßt den ___ aus Frankreich. | Franzosen | Franzose # der Franzose → den Franzosen。
+i Unser neuer Kollege ist Franzose. Kennst du den ___ schon? | Franzosen | Franzose # der Franzose → den Franzosen。
 `);
 
   X('b2-satzverbindungen', `
@@ -182,7 +182,7 @@ c Er ist ___ seiner Arbeit unzufrieden. | mit | über | von | an # unzufrieden m
 o 我对这个结果很高兴。 | Ich bin froh über das Ergebnis. # froh über + Akk。
 o 学生们对这个题目很感兴趣。 | Die Studenten sind an dem Thema sehr interessiert. # interessiert an + Dat。
 i Wer ist ___ den Fehler verantwortlich? | für # verantwortlich für + Akk。
-c Sie ist ___ ihrem Freund verheiratet. | mit | an | zu | von # verheiratet mit + Dat。
+c Sie ist ___ einem Arzt verheiratet. | mit | an | zu | von # verheiratet mit + Dat。
 c Dieses Buch ist ___ Anfänger nicht geeignet. | für | zu | an | mit # geeignet für + Akk。
 i Die Region ist reich ___ Bodenschätzen. | an # reich an + Dat。
 `);
@@ -196,7 +196,7 @@ i Das ist alles, ___ ich weiß. | was # alles 后 → was。
 c Die Kollegin, ___ Hilfe ich sehr dankbar bin, geht in Rente. | für deren | für dessen | deren | für die # dankbar für + Genitiv 关系代词 deren。
 o 他说的话没有一句合乎逻辑。 | Nichts, was er sagt, ist logisch. # nichts 后 → was。
 o 谁努力学习，谁就能成功。 | Wer fleißig lernt, hat Erfolg. # wer … (der) …
-c Das ist etwas, ___ ich nicht gerechnet habe. | womit | mit dem | was | damit # rechnen mit + etwas → womit。
+c Das ist etwas, ___ ich nicht gerechnet habe. | womit | worauf | was | damit # rechnen mit + etwas → womit。
 i Die Studenten, ___ Hausarbeiten noch fehlen, müssen sich melden. | deren # 复数 + 所属 → deren。
 c Ich ziehe nach Hamburg, ___ meine Familie lebt. | wo | wohin | woher | was # 地点 → wo。
 `);
@@ -215,13 +215,13 @@ i ___ fällt mir schwer, früh aufzustehen. | Es # 关联词 es。
 `);
 
   X('b2-partikeln', `
-c Hast du ___ eine Idee, wie das funktioniert? | vielleicht | doch | halt | bloß # 礼貌地询问 → vielleicht。
+c Hast du ___ eine Idee, wie das funktioniert? | vielleicht | eben | halt | bloß # 礼貌地询问 → vielleicht。
 c Mach ___ das Fenster zu, es ist kalt! | doch mal | denn mal | ja mal | halt denn # 友好催促 → doch mal。
 c Was machst du ___ hier? | denn | doch | mal | halt # 疑问句中的惊讶 → denn。
 c Das ist ___ unglaublich! | ja | denn | mal | bloß # 惊讶 → ja。
 i Dann nimm ___ den Bus, wenn das Auto kaputt ist. | halt;eben;doch # 无奈的建议 → halt / eben。
 c Du hast ___ recht, das sehe ich ein. | ja | denn | mal | bloß # 认同已知事实 → ja。
-c Ruf mich ___ an, wenn du Zeit hast. | mal | denn | bloß | eben # 缓和请求 → mal。
+c Ruf mich ___ an, wenn du Zeit hast. | mal | denn | ja | wohl # 缓和请求 → mal。
 o 你到底去哪儿了？ | Wo warst du denn? # denn。
 o 千万别迟到！ | Komm bloß nicht zu spät! # 警告 → bloß。
 c Bist du nicht müde? – ___, sehr sogar. | Doch | Ja | Nein | Schon # 反驳否定问句 → Doch。

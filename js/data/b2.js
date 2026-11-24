@@ -28,7 +28,7 @@
     ex: [
       C('Das Problem ___ sich leicht lösen.', ['lässt', 'ist', 'wird', 'hat'], 'sich lassen + 不定式 = kann gelöst werden。'),
       C('Die Rechnung ist bis Montag ___ bezahlen.', ['zu', 'um', 'am', 'zum'], 'sein + zu + 不定式 = muss bezahlt werden。'),
-      C('Das Geschäft ___ seit 9 Uhr geöffnet.', ['ist', 'wird', 'wurde', 'hat'], '结果状态 → Zustandspassiv：ist geöffnet。'),
+      C('Das Geschäft ___ seit 9 Uhr geöffnet.', ['ist', 'wird', 'wurde', 'worden'], '结果状态 → Zustandspassiv：ist geöffnet。'),
       I('Diese Aufgabe ist leicht ___ lösen.', 'zu', null, 'sein + zu + 不定式 = kann gelöst werden。'),
       C('Seine Schrift ist leider kaum ___.', ['lesbar', 'gelesen', 'lesend', 'zu lesbar'], '-bar = 可以被…：lesbar = kann gelesen werden。'),
       C('Ich weiß, dass das Formular bis morgen ausgefüllt ___.', ['werden muss', 'muss werden', 'müssen wird', 'wird müssen'], '从句中：Partizip II + werden + 变位情态动词。'),
@@ -81,7 +81,7 @@
 
   /* ---------------- 3 Konjunktiv I ---------------- */
   U.push({
-    id: 'b2-k1', level: 'B2', n: 3, icon: 'chat',
+    id: 'b2-k1', level: 'B2', n: 3, icon: 'chat', cPrompt: 'Indirekte Rede (Schriftsprache): Was passt?',
     title: 'Konjunktiv I', zh: '间接引语',
     tip:
       '<h4>用途</h4>' +
@@ -150,7 +150,7 @@
       O('他既不喝咖啡也不喝茶。', 'Er trinkt weder Kaffee noch Tee.', 'weder … noch 本身就是否定。'),
       O('一方面我想留下，另一方面我想旅行。', 'Einerseits möchte ich bleiben, andererseits möchte ich reisen.', 'einerseits / andererseits 占第一位，动词紧随。'),
       O('你越早来越好。', 'Je früher du kommst, desto besser.', 'je + 比较级 … desto + 比较级。'),
-      C('Ich komme ___ heute ___ morgen, aber sicher diese Woche.', ['entweder / oder', 'weder / noch', 'sowohl / als auch', 'zwar / aber'], '二选一 → entweder … oder。'),
+      C('Ich komme ___ heute ___ morgen – das weiß ich noch nicht genau.', ['entweder / oder', 'weder / noch', 'sowohl / als auch', 'zwar / aber'], '二选一 → entweder … oder。'),
       I('Wir haben ___ den Bus als auch den Zug verpasst.', 'sowohl', null, 'sowohl … als auch。'),
       C('Das Hotel war zwar teuer, ___ das Essen war ausgezeichnet.', ['aber', 'sondern', 'oder', 'noch'], 'zwar … aber。'),
       M([['sowohl', 'als auch'], ['weder', 'noch'], ['entweder', 'oder'], ['nicht nur', 'sondern auch'], ['je', 'desto']], 'Teil 1 ↔ Teil 2', '')
@@ -216,8 +216,8 @@
       '<p>主语 → 物主代词或 Genitiv / von；宾语 → Genitiv；副词 → 形容词。</p>',
     ex: [
       C('___ des starken Regens fiel der Unterricht aus.', ['Wegen', 'Trotz', 'Bei', 'Nach'], 'weil es stark regnete → wegen + Gen。'),
-      C('___ seiner Krankheit arbeitete er weiter.', ['Trotz', 'Wegen', 'Bei', 'Vor'], 'obwohl er krank war → trotz + Gen。'),
-      C('___ seiner Ankunft rief er sofort an.', ['Nach', 'Vor', 'Bei', 'Seit'], 'nachdem er angekommen war → nach + Dat。'),
+      C('___ seiner Krankheit arbeitete er weiter.', ['Trotz', 'Wegen', 'Zur', 'Vor'], 'obwohl er krank war → trotz + Gen。'),
+      C('___ seiner Ankunft rief er sofort an.', ['Nach', 'Vor', 'Während', 'Seit'], 'nachdem er angekommen war → nach + Dat。'),
       I('___ unserer Abreise müssen wir noch packen.', 'Vor', 'bevor wir abreisen', 'bevor → vor + Dat。'),
       I('___ Regen fällt das Spiel aus.', 'Bei', 'wenn es regnet', 'wenn（条件）→ bei + Dat。'),
       I('Die ___ der Qualität ist unser Ziel.', 'Verbesserung', 'verbessern', 'verbessern → die Verbesserung（-ung）。'),
@@ -267,7 +267,7 @@
       O('她肯定已经回家了。', 'Sie muss schon nach Hause gegangen sein.', 'muss + Partizip II + sein。'),
       O('据说这家餐厅非常好。', 'Das Restaurant soll sehr gut sein.', 'soll = 据说。'),
       I('Bis Ende des Jahres ___ wir das Haus fertig gebaut haben.', 'werden', null, 'Futur II：werden … gebaut haben。'),
-      C('Das kann nicht stimmen! Er ___ nicht in Paris gewesen sein – ich habe ihn gestern hier gesehen.', ['kann', 'soll', 'muss', 'will'], '确定不可能 → kann nicht。'),
+      C('Das kann nicht stimmen! Er ___ nicht in Paris gewesen sein – ich habe ihn gestern hier gesehen.', ['kann', 'soll', 'hat', 'will'], '确定不可能 → kann nicht。'),
       M([['muss', 'ziemlich sicher'], ['dürfte', 'wahrscheinlich'], ['könnte', 'vielleicht'], ['soll', 'man sagt'], ['will', 'er behauptet']], 'Modalverb ↔ Bedeutung', '')
     ]
   });
@@ -454,7 +454,7 @@
       C('Die Autorin, ___ Roman ich gerade lese, kommt aus Graz.', ['deren', 'dessen', 'der', 'die'], '阴性先行词 + 所属 → deren。'),
       C('Der Professor, mit ___ Hilfe ich die Arbeit geschrieben habe, …', ['dessen', 'deren', 'dem', 'der'], '阳性先行词 + 所属 → dessen。'),
       I('___ einmal gelogen hat, dem glaubt man nicht.', 'Wer', null, '泛指人，从句主语 → Wer。'),
-      C('Wen ich nicht kenne, ___ öffne ich nicht die Tür.', ['dem', 'den', 'der', 'wem'], 'jdm. die Tür öffnen → Dat dem。'),
+      C('Wen ich nicht kenne, ___ öffne ich die Tür nicht.', ['dem', 'den', 'der', 'wem'], 'jdm. die Tür öffnen → Dat dem。'),
       O('我们去他长大的那个城市。', 'Wir fahren in die Stadt, wo er aufgewachsen ist.', '地点 → wo。'),
       O('他说的一切都是真的。', 'Alles, was er gesagt hat, ist wahr.', 'alles → was。'),
       I('Die Nachbarn, ___ Kinder sehr laut sind, ziehen bald aus.', 'deren', null, '复数先行词 + 所属 → deren。'),

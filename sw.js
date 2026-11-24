@@ -1,9 +1,9 @@
 /* Offline cache: network-first (always fresh online), cache fallback offline */
-var CACHE = 'grammatik-v7';
+var CACHE = 'umlaut-v9';
 var ASSETS = [
   './', 'index.html', 'css/app.css',
   'js/data/dsl.js', 'js/data/b1.js', 'js/data/b2.js', 'js/data/b1x.js', 'js/data/b2x.js',
-  'js/data/more-b1.js', 'js/data/more-b2.js', 'js/data/c1.js', 'js/data/chapters.js', 'js/data/words.js', 'js/vocab.js', 'js/store.js', 'js/i18n.js', 'js/sound.js', 'js/lesson.js', 'js/app.js',
+  'js/data/more-b1.js', 'js/data/more-b2.js', 'js/data/c1.js', 'js/data/context.js', 'js/data/tips-plus.js', 'js/data/chapters.js', 'js/data/words.js', 'js/vocab.js', 'js/store.js', 'js/i18n.js', 'js/sound.js', 'js/lesson.js', 'js/app.js',
   'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', function (e) {

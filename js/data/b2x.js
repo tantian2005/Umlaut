@@ -69,7 +69,7 @@
       I('Wir sind ___ dem Vorschlag einverstanden.', 'mit', null, 'einverstanden mit + Dat。'),
       C('Ich bin dir sehr dankbar ___ deine Hilfe.', ['für', 'über', 'an', 'zu'], 'dankbar für + Akk。'),
       C('Ich bin froh ___, dass alles geklappt hat.', ['darüber', 'worüber', 'dafür', 'daran'], 'froh über → 接从句时用 darüber。'),
-      C('Heidelberg ist bekannt ___ seine Altstadt.', ['für', 'durch', 'über', 'an'], 'bekannt für + Akk。'),
+      C('Heidelberg ist bekannt ___ seine Altstadt.', ['für', 'mit', 'über', 'an'], 'bekannt für + Akk。'),
       O('我们对这个结果很失望。', 'Wir sind von dem Ergebnis enttäuscht.', 'enttäuscht von + Dat。', { alt: ['Wir sind enttäuscht von dem Ergebnis.'] }),
       O('他对自己的想法深信不疑。', 'Er ist von seiner Idee überzeugt.', 'überzeugt von + Dat。', { alt: ['Er ist überzeugt von seiner Idee.'] }),
       I('Bist du bereit ___ einem Neuanfang?', 'zu', null, 'bereit zu + Dat。'),
@@ -130,7 +130,7 @@
     ex: [
       C('Wo warst du ___? Ich habe dich überall gesucht!', ['denn', 'doch', 'mal', 'eben'], '疑问句中表示关心 / 着急 → denn。'),
       C('Komm ___ mit! Es wird bestimmt lustig.', ['doch', 'denn', 'ja', 'eben'], '鼓励对方 → doch。'),
-      C('Kannst du ___ kurz das Fenster aufmachen?', ['mal', 'denn', 'ja', 'eben'], '缓和请求 → mal。'),
+      C('Kannst du ___ kurz das Fenster aufmachen?', ['mal', 'halt', 'ja', 'bloß'], '缓和请求 → mal。'),
       C('Das ist ___ eine tolle Überraschung!', ['ja', 'denn', 'mal', 'bloß'], '惊讶 → ja。'),
       C('Hast du keine Zeit? – ___, ich habe Zeit.', ['Doch', 'Ja', 'Nein', 'Schon'], '反驳否定问句 → Doch。'),
       C('Wie heißt du ___? Ich habe deinen Namen vergessen.', ['eigentlich', 'mal', 'doch', 'eben'], '顺便一问 → eigentlich。'),
@@ -141,7 +141,7 @@
       O('你到底想要什么？', 'Was willst du denn?', '疑问句 + denn。'),
       O('你过来一下嘛！', 'Komm doch mal her!', 'doch mal：友好的催促。'),
       C('Ich kann nicht kommen, ich bin ___ krank.', ['halt', 'denn', 'mal', 'bloß'], '无法改变的事实 → halt。'),
-      C('Was ist ___ hier los?', ['denn', 'mal', 'eben', 'schon'], '疑问句中的惊讶 → denn。'),
+      C('Was ist ___ hier los?', ['denn', 'mal', 'eben', 'ja'], '疑问句中的惊讶 → denn。'),
       M([['denn', '疑问：关心 / 好奇'], ['mal', '缓和请求'], ['doch', '鼓励 / 反驳'], ['ja', '惊讶 / 已知'], ['halt', '无奈接受']], 'Partikel ↔ Funktion', '')
     ]
   });

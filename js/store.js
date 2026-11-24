@@ -115,6 +115,12 @@
       if (correct) state.totals.correct++;
     },
 
+    restoreItem: function (id, json) {
+      var it = json ? JSON.parse(json) : null;
+      if (it) state.items[id] = it; else delete state.items[id];
+      state.totals.answered = Math.max(0, state.totals.answered - 1);
+    },
+
     dueIds: function (validIds) {
       var now = Date.now(), out = [];
       for (var id in state.items) {

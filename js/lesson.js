@@ -5,6 +5,7 @@
   var tr = function (k, v) { return G.t(k, v); };
   var root = document.getElementById('lesson');
   var LESSON_SIZE = 8;
+  var UMLAUTS = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
 
   var ICON = {
     close: '<svg viewBox="0 0 24 24"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg>',
@@ -47,10 +48,15 @@
   function arr(a) { return Array.isArray(a) ? a : [a]; }
 
   // ---------- picking ----------
+  // difficulty grows lesson by lesson: choice/matching → gap filling & sentence building → translation
+  var STAGE_BONUS = [{ c: 3, m: 2, i: 1, o: 0 }, { c: 1, m: 0.5, i: 2.5, o: 2.5 }, { c: 0, m: 0, i: 2.5, o: 3 }];
+  var RANK = { m: 0, c: 1, i: 2, o: 3 };
+  function stageOf(unit) { return Math.min(S.unit(unit.id).lessons, 2); }
   function pickForUnit(unit) {
     var ids = unit.ids.slice();
+    var bonus = STAGE_BONUS[stageOf(unit)];
     var scored = ids.map(function (id) {
-      var it = S.item(id), s = Math.random() * 2;
+      var it = S.item(id), s = Math.random() * 2 + (bonus[G.itemIndex[id].ex.t] || 0);
       if (!it) s += 5;
       else {
         if (it.box > 0) s += 4;
@@ -59,21 +65,21 @@
       return { id: id, s: s };
     });
     scored.sort(function (a, b) { return b.s - a.s; });
-    var pick = scored.slice(0, Math.min(LESSON_SIZE, ids.length)).map(function (x) { return x.id; });
-    // keep at most one matching exercise per lesson
-    var seenMatch = false;
-    pick = pick.filter(function (id) {
-      var m = G.itemIndex[id].ex.t === 'm';
-      if (m && seenMatch) return false;
-      if (m) seenMatch = true;
-      return true;
+    // per-stage mix: how many of each type at most (filled by priority, then topped up freely)
+    var CAPS = [{ c: 4, m: 1, i: 2, o: 1 }, { c: 3, m: 1, i: 3, o: 2 }, { c: 2, m: 0, i: 3, o: 3 }][stageOf(unit)];
+    var size = Math.min(LESSON_SIZE, ids.length), used = { c: 0, m: 0, i: 0, o: 0 }, pick = [];
+    scored.forEach(function (x) {
+      var t = G.itemIndex[x.id].ex.t;
+      if (pick.length < size && used[t] < CAPS[t]) { pick.push(x.id); used[t]++; }
     });
-    if (pick.length < Math.min(LESSON_SIZE, ids.length)) {
-      ids.forEach(function (id) {
-        if (pick.length < LESSON_SIZE && pick.indexOf(id) < 0 && G.itemIndex[id].ex.t !== 'm') pick.push(id);
-      });
-    }
-    return shuffle(pick);
+    scored.forEach(function (x) {
+      var t = G.itemIndex[x.id].ex.t;
+      if (pick.length < size && pick.indexOf(x.id) < 0 && t !== 'm') pick.push(x.id);
+    });
+    // easy → hard inside the lesson
+    var key = {};
+    pick.forEach(function (id) { key[id] = RANK[G.itemIndex[id].ex.t] + Math.random() * 0.9; });
+    return pick.sort(function (a, b) { return key[a] - key[b]; });
   }
 
   // ---------- lesson state ----------
@@ -85,6 +91,7 @@
     L = {
       kind: opts.kind || 'unit',
       unit: opts.unit || null,
+      stage: opts.unit ? stageOf(opts.unit) : 0,
       level: opts.level || null,
       queue: ids.map(function (id) { return { id: id, tries: 0 }; }),
       total: ids.length,
@@ -100,6 +107,7 @@
     };
     root.hidden = false;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('in-lesson');
     history.pushState({ lesson: 1 }, '');
     render();
     fitViewport();
@@ -175,7 +183,20 @@
     var foot = root.querySelector('.lesson-foot');
     foot.className = 'lesson-foot';
     var auto = L.view.auto;
-    foot.firstChild.innerHTML =
+    var oldKeys = foot.querySelector('.foot-keys'); if (oldKeys) oldKeys.remove();
+    if (L.view.insert) {
+      var bar = document.createElement('div');
+      bar.className = 'foot-keys';
+      bar.setAttribute('aria-label', tr('Sonderzeichen'));
+      bar.innerHTML = UMLAUTS.map(function (c) { return '<button type="button" tabindex="-1" data-k="' + c + '">' + c + '</button>'; }).join('');
+      bar.querySelectorAll('button').forEach(function (b) {
+        b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        b.addEventListener('touchstart', function (e) { e.preventDefault(); L.view.insert(b.dataset.k); }, { passive: false });
+        b.onclick = function () { L.view.insert(b.dataset.k); };
+      });
+      foot.insertBefore(bar, foot.firstChild);
+    }
+    foot.querySelector('.foot-in').innerHTML =
       '<button class="btn ghost skip" data-act="skip">' + tr('Überspringen') + '</button>' +
       (auto ? '' : '<button class="btn ok" data-act="check" disabled>' + tr('Prüfen') + '</button>');
     foot.querySelector('[data-act="skip"]').onclick = function () { answer(false, true); };
@@ -206,6 +227,7 @@
     L.view.reveal(ok);
 
     var isMatch = ex.t === 'm';
+    L.snap = { id: e.id, first: first, before: first ? JSON.stringify(S.item(e.id) || null) : null };
     if (first) S.markItem(e.id, ok);
     else if (ok && S.item(e.id) && S.item(e.id).box === 1) { /* retry success inside lesson: keep box */ }
 
@@ -226,10 +248,28 @@
     showFeedback(ok, ex, note, isMatch && !ok);
   }
 
+  // the learner's translation was a valid alternative: count it as correct
+  function forgive(ex) {
+    var sn = L.snap, e = L.cur;
+    if (!sn || sn.id !== e.id) return;
+    if (sn.first) { S.restoreItem(e.id, sn.before); S.markItem(e.id, true); L.firstOK++; }
+    delete L.wrongIds[e.id];
+    L.queue = L.queue.filter(function (q) { return q !== e; });
+    L.solved++;
+    L.combo++;
+    S.save();
+    setProgress();
+    L.view.reveal(true);
+    var ta = root.querySelector('.tr-input'); if (ta) ta.classList.remove('bad');
+    G.sound.ok();
+    showFeedback(true, ex, null, false);
+  }
+
   var PRAISE = ['Richtig!', 'Super!', 'Genau!', 'Sehr gut!', 'Klasse!', 'Perfekt!'];
 
   function showFeedback(ok, ex, note, softWrong) {
     var foot = root.querySelector('.lesson-foot');
+    var fk = foot.querySelector('.foot-keys'); if (fk) fk.remove();
     foot.className = 'lesson-foot ' + (ok ? 'ok' : 'bad');
     var full = fullSentence(ex);
     var speak = full && S.state.settings.tts && G.sound.canSpeak()
@@ -251,16 +291,19 @@
           (note ? '<p class="exp">' + esc(note) + '</p>' : '') +
           (ex.e ? '<p class="exp">' + ex.e + '</p>' : '') +
           (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
+          (!ok && !softWrong && L.view.override ? '<button class="btn ghost small ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '') +
           vocab +
         '</div>' +
       '</div>' +
       '<button class="btn ' + (ok ? 'ok' : 'bad') + '" data-act="next">' + tr('Weiter') + '</button>';
-    foot.firstChild.innerHTML = html;
+    foot.querySelector('.foot-in').innerHTML = html;
     var nb = foot.querySelector('[data-act="next"]');
     nb.onclick = next;
     var sb = foot.querySelector('[data-act="say"]');
     if (sb) sb.onclick = function () { G.sound.speak(full); };
     foot.querySelectorAll('.wchip').forEach(function (c) { c.onclick = function () { G.sound.speak(c.dataset.w); }; });
+    var ob = foot.querySelector('[data-act="ovr"]');
+    if (ob) ob.onclick = function () { forgive(ex); };
     setTimeout(function () { nb.focus({ preventScroll: true }); }, 30);
     if (S.state.settings.tts && S.state.settings.autoSpeak && full) G.sound.speak(full);
   }
@@ -291,8 +334,9 @@
     var lv = '<span class="tag' + G.lvc(unit.level) + '">' + esc(unit.title) + '</span>';
     return '<p class="q-kind">' + lv + '</p>';
   }
-  function titleFor(ex) {
+  function titleFor(ex, unit) {
     if (ex.p) return tr(ex.p);
+    if (unit && unit.cPrompt && ex.t === 'c') return tr(unit.cPrompt);
     return tr({ c: 'Wähle die richtige Antwort.', i: 'Ergänze die Lücke.', o: 'Bilde den Satz.', m: 'Finde die Paare.' }[ex.t]);
   }
 
@@ -309,13 +353,61 @@
   function makeView(ex, unit, entry) {
     var wrap = document.createElement('div');
     wrap.className = 'q-wrap';
-    var head = kindLabel(ex, unit) + '<h2 class="q-title">' + esc(titleFor(ex)) +
+    var head = kindLabel(ex, unit) + '<h2 class="q-title">' + esc(titleFor(ex, unit)) +
       (ex.t === 'o' ? '<br><span class="zh">' + esc(ex.zh) + '</span>' : '') + '</h2>';
     if (ex.t === 'c') return viewChoice(wrap, head, ex);
     if (ex.t === 'i') return viewInput(wrap, head, ex);
+    if (ex.t === 'o' && translateMode(entry.id)) {
+      head = kindLabel(ex, unit) + '<h2 class="q-title">' + esc(tr('Übersetze ins Deutsche.')) + '<br><span class="zh">' + esc(ex.zh) + '</span></h2>';
+      return viewTranslate(wrap, head, ex);
+    }
     if (ex.t === 'o') return viewOrder(wrap, head, ex);
     if (ex.t === 'm') return viewMatch(wrap, head, ex);
     throw new Error('unknown exercise type ' + ex.t);
+  }
+
+  function translateMode(id) {
+    if (L.kind === 'test') return false;
+    if (L.kind === 'unit') return L.stage >= 2;
+    var it = S.item(id);
+    return !!(it && it.c >= 2);
+  }
+  function normSentence(s) {
+    return translit(String(s).toLowerCase().replace(/[„“”"'’.,!?;:()\u2013-]/g, ' ').replace(/\s+/g, ' ').trim());
+  }
+
+  function viewTranslate(wrap, head, ex) {
+    wrap.innerHTML = head +
+      '<textarea class="tr-input" lang="de" rows="3" aria-label="' + tr('Deine Übersetzung') + '" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done"></textarea>' +
+      '<div class="keys" aria-label="' + tr('Sonderzeichen') + '">' +
+      UMLAUTS.map(function (c) { return '<button type="button" tabindex="-1" data-k="' + c + '">' + c + '</button>'; }).join('') + '</div>';
+    var ta = wrap.querySelector('.tr-input');
+    ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; updateCheck(); });
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (L.answered) next(); else check(); }
+    });
+    function insert(ch) {
+      if (L.answered) return;
+      var s = ta.selectionStart, en = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s) + ch + ta.value.slice(en);
+      ta.focus(); ta.setSelectionRange(s + 1, s + 1); updateCheck();
+    }
+    wrap.querySelectorAll('.keys button').forEach(function (b) {
+      b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      b.onclick = function () { insert(b.dataset.k); };
+    });
+    var accepted = [ex.a].concat(ex.alt || []);
+    return {
+      el: wrap, insert: insert, override: true,
+      focus: function () { if (window.matchMedia('(hover: hover)').matches) ta.focus({ preventScroll: true }); },
+      ready: function () { return ta.value.trim().length > 0; },
+      grade: function () {
+        var v = normSentence(ta.value);
+        return { ok: accepted.some(function (a) { return normSentence(a) === v; }) };
+      },
+      reveal: function (ok) { ta.readOnly = true; ta.classList.add(ok ? 'ok' : 'bad'); },
+      key: function () { return false; }
+    };
   }
 
   function viewChoice(wrap, head, ex) {
@@ -371,7 +463,7 @@
         return '<input class="gap-input" type="text" lang="de" aria-label="' + tr('Antwort') + '" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" style="width:' + (longest + 2.5) + 'ch">';
       }) + (ex.h ? ' <span class="hint">(' + esc(ex.h) + ')</span>' : '') + '</div>' +
       '<div class="keys" aria-label="' + tr('Sonderzeichen') + '">' +
-      ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'].map(function (c) { return '<button type="button" tabindex="-1" data-k="' + c + '">' + c + '</button>'; }).join('') +
+      UMLAUTS.map(function (c) { return '<button type="button" tabindex="-1" data-k="' + c + '">' + c + '</button>'; }).join('') +
       '</div>';
     var inp = wrap.querySelector('.gap-input');
     inp.addEventListener('input', updateCheck);
@@ -379,20 +471,22 @@
     inp.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (L.answered) next(); else check(); }
     });
+    function insert(ch) {
+      if (L.answered) return;
+      var s = inp.selectionStart != null ? inp.selectionStart : inp.value.length;
+      var en = inp.selectionEnd != null ? inp.selectionEnd : inp.value.length;
+      inp.value = inp.value.slice(0, s) + ch + inp.value.slice(en);
+      inp.focus();
+      inp.setSelectionRange(s + 1, s + 1);
+      updateCheck();
+    }
     wrap.querySelectorAll('.keys button').forEach(function (b) {
       b.addEventListener('mousedown', function (e) { e.preventDefault(); });
-      b.onclick = function () {
-        if (L.answered) return;
-        var s = inp.selectionStart != null ? inp.selectionStart : inp.value.length;
-        var en = inp.selectionEnd != null ? inp.selectionEnd : inp.value.length;
-        inp.value = inp.value.slice(0, s) + b.dataset.k + inp.value.slice(en);
-        inp.focus();
-        inp.setSelectionRange(s + 1, s + 1);
-        updateCheck();
-      };
+      b.onclick = function () { insert(b.dataset.k); };
     });
     return {
       el: wrap,
+      insert: insert,
       focus: function () { if (window.matchMedia('(hover: hover)').matches) inp.focus({ preventScroll: true }); },
       ready: function () { return inp.value.trim().length > 0; },
       grade: function () {
@@ -561,6 +655,8 @@
     wrap.querySelectorAll('.opt').forEach(function (b) {
       b.onclick = function () {
         if (L.answered || b.classList.contains('gone')) return;
+        var txt = b.textContent;
+        if (S.state.settings.tts && /[A-Za-zÄÖÜäöüß]{2}/.test(txt) && !/[㐀-鿿]/.test(txt)) G.sound.speak(txt.replace(/[…]/g, ''));
         var side = b.dataset.s;
         if (sel[side]) sel[side].setAttribute('aria-pressed', 'false');
         sel[side] = b;
@@ -623,7 +719,8 @@
         '</div>' +
         mistakesHTML(Object.keys(L.wrongIds)) +
       '</div>';
-    foot.firstChild.innerHTML = '<span></span><button class="btn" data-act="end">' + tr('Weiter') + '</button>';
+    var fk = foot.querySelector('.foot-keys'); if (fk) fk.remove();
+    foot.querySelector('.foot-in').innerHTML = '<span></span><button class="btn" data-act="end">' + tr('Weiter') + '</button>';
     var b = foot.querySelector('[data-act="end"]');
     b.onclick = close;
     setTimeout(function () { b.focus({ preventScroll: true }); }, 50);
@@ -677,19 +774,26 @@
 
   function close() {
     if (!L) return;
+    var goHome = !!L.finished;
     L = null;
+    document.body.classList.remove('in-lesson');
     root.hidden = true;
     root.innerHTML = '';
     root.style.height = ''; root.style.top = ''; root.classList.remove('kb');
     document.body.style.overflow = '';
     if ('speechSynthesis' in window) speechSynthesis.cancel();
-    if (history.state && history.state.lesson) { closingNav = true; history.back(); }
+    if (history.state && history.state.lesson) { closingNav = true; pendingHome = goHome; history.back(); }
+    else if (goHome) G.app.home();
     G.app.refresh();
   }
 
-  var closingNav = false;
+  var closingNav = false, pendingHome = false;
   window.addEventListener('popstate', function () {
-    if (closingNav) { closingNav = false; return; }
+    if (closingNav) {
+      closingNav = false;
+      if (pendingHome) { pendingHome = false; G.app.home(); }
+      return;
+    }
     if (L) {
       history.pushState({ lesson: 1 }, '');
       askQuit();
@@ -699,7 +803,7 @@
   document.addEventListener('keydown', function (e) {
     if (!L || document.querySelector('.scrim')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    var inInput = e.target && e.target.tagName === 'INPUT';
+    var inInput = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA');
     if (e.key === 'Escape') { e.preventDefault(); askQuit(); return; }
     if ((e.key === 'h' || e.key === 'H') && !inInput && L.kind !== 'test') { e.preventDefault(); showTip(); return; }
     if (e.key === 'Enter') {

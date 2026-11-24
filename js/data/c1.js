@@ -35,7 +35,7 @@ i {Nominalstil: Bevor die Kandidaten geprüft werden, …} ___ der Prüfung der 
 i {Man untersucht die Ursachen.} die ___ der Ursachen | Untersuchung | untersuchen # Akk 宾语 → Genitiv。
 i {Die Bevölkerung wächst schnell.} das schnelle ___ der Bevölkerung | Wachstum | wachsen # 副词 schnell → 形容词；主语 → Genitiv。
 i {Die Preise steigen deutlich.} der deutliche ___ der Preise | Anstieg | steigen # steigen → der Anstieg。
-c {Viele interessieren sich für das Thema.} das Interesse vieler ___ das Thema | an | für | über | auf # sich interessieren für → das Interesse an。
+c {Viele interessieren sich für das Thema.} das Interesse vieler ___ dem Thema | an | für | über | auf # sich interessieren für → das Interesse an。
 c {Die Arbeitslosigkeit nimmt ab.} die ___ der Arbeitslosigkeit | Abnahme | Abnehmen | Abnahmung | Abgenommenheit # abnehmen → die Abnahme。
 c {Man entwickelt neue Technologien.} die Entwicklung ___ Technologien | neuer | neue | neuen | neues # 无冠词 Gen 复数 → -er。
 c {Der Staat fördert die Forschung.} die Förderung der Forschung ___ den Staat | durch | mit | bei | für # 施动者 → durch + Akk。
@@ -119,14 +119,14 @@ c Er wird die Prüfung kaum bestehen, ___ er nie gelernt hat. | zumal | sofern |
 c Wir fahren morgen los, ___ es regnet stark. | es sei denn, | sofern | zumal | indem # 除非 → es sei denn + 主句语序。
 c In Städten steigen die Mieten, ___ sie auf dem Land eher sinken. | wohingegen | indem | sofern | zumal # 对比 → wohingegen。
 c Die Aufgabe ist zu schwierig, ___ man sie in einer Stunde lösen könnte. | als dass | sodass | damit | ohne dass # zu … als dass + K II。
-c Er hat das Projekt beendet, ___ jemand ihm geholfen hat. | ohne dass | als dass | sodass | indem # 主语不同 → ohne dass。
+c Er hat das Projekt beendet, ___ ihm jemand geholfen hat. | ohne dass | als dass | sodass | indem # 主语不同 → ohne dass。
 i Die Kosten sind gestiegen. ___ müssen die Gebühren erhöht werden. | Folglich;Infolgedessen;Deshalb;Daher;Demnach | 因此 # 结果副词占第一位，动词紧随。
 i Das Konzept ist teuer. ___ überzeugt es viele Experten. | Dennoch;Trotzdem;Nichtsdestotrotz | 尽管如此 # 让步副词。
 c Er spricht kein Englisch, ___ denn Chinesisch. | geschweige | sondern | sowie | zumal # 更不用说 → geschweige denn。
 c ___ ist das Studium teuer, zum anderen fehlt die Zeit. | Zum einen | Einerseits | Erstens | Zwar # zum einen … zum anderen。
 c Viele Menschen fahren gern Fahrrad. Autofahrer ___ beschweren sich über fehlende Parkplätze. | hingegen | indem | sofern | zumal # 对比 → hingegen（可在中场）。
 c ___ man die Daten genau analysiert, erkennt man einen klaren Trend. | Wenn | Zumal | Ohne dass | Als dass # 条件 → wenn。
-c Die Zahl der Unfälle ging zurück, ___ strengere Regeln eingeführt wurden. | nachdem | indem | als dass | sofern # 时间先后 → nachdem。
+c Die Zahl der Unfälle ging zurück, ___ strengere Regeln eingeführt worden waren. | nachdem | indem | als dass | sofern # 时间先后 → nachdem。
 c ___ die Ergebnisse nicht vorliegen, kann man noch nichts sagen. | Solange | Zumal | Indem | Sodass # 只要还没…… → solange。
 i Das Angebot gilt nur, ___ der Vorrat reicht. | solange;sofern;soweit # 条件 / 期限。
 c ___ zu protestieren, sollte man konkrete Vorschläge machen. | Anstatt | Ohne | Um | Indem # 不……而 → anstatt … zu。
@@ -173,7 +173,7 @@ o 根据这项研究，越来越多的人在家工作。 | Laut der Studie arbei
 o 作者认为这个理论已经过时了。 | Der Autor meint, die Theorie sei veraltet. # K I：sei。
 o 专家警告说，形势可能会恶化。 | Experten warnen, die Lage könne sich verschlechtern. # K I：könne。
 i Wie die Zeitung ___, wurde der Vertrag unterschrieben. | berichtet;berichtete | berichten # wie-从句：直陈式即可。
-c Er erklärte, er ___ morgen nach Berlin. | fahre | fährt | führe | fahren # K I：fahre。
+c {Indirekte Rede, Konjunktiv I} Er erklärte, er ___ morgen nach Berlin. | fahre | fahren | fahrt | gefahren # K I：fahre（口语中也说 fährt / führe，书面转述用 K I）。
 i Sie sagten, sie ___ keine Ahnung gehabt. | hätten | haben, Konjunktiv # sie haben = 直陈式 → K II hätten。
 c Laut ___ Bericht der Regierung ist die Lage stabil. | dem | den | der | die # laut + Dat：dem Bericht。
 c Der Autor ___ hervor, dass die Ergebnisse vorläufig sind. | hebt | stellt | bringt | weist # hervorheben = 强调。
@@ -211,7 +211,7 @@ c Der Vorschlag ist ___. (= sollte man unterstützen) | unterstützenswert | unt
 o 所有表格都必须用德语填写。 | Alle Formulare sind auf Deutsch auszufüllen. # sein + zu；可分动词 aus-zu-füllen。
 o 这个任务很容易完成。 | Die Aufgabe lässt sich leicht erledigen. # sich lassen。
 o 你不必担心。 | Du brauchst dir keine Sorgen zu machen. # nicht brauchen + zu。
-i Die Kosten sind kaum ___. (vorhersehen, -bar) | vorhersehbar | -bar # vorhersehbar = kann vorhergesehen werden。
+i Die Kosten sind kaum ___. | vorhersehbar | vorhersehen, -bar # vorhersehbar = kann vorhergesehen werden。
 c Die Ergebnisse ___ sich nicht verallgemeinern. | lassen | sind | haben | werden # sich lassen + 不定式。
 c Der Text ist ohne Wörterbuch kaum zu ___. | verstehen | verstanden | verständlich | versteht # sein + zu + 不定式。
 i Die Situation ist ernst, aber nicht ___. | hoffnungslos | Hoffnung, -los # -los = 没有……
@@ -257,7 +257,7 @@ c Es ist ein deutlicher ___ der Zahlen zu erkennen. | Rückgang | Rückgehen | Z
 o 图表显示了 2000 年到 2020 年间能源消耗的变化。 | Die Grafik zeigt die Entwicklung des Energieverbrauchs zwischen 2000 und 2020. # zeigen + Akk。
 o 失业率下降到了 5%。 | Die Arbeitslosenquote sank auf fünf Prozent. # 终值 → auf。
 o 与男性相比，女性更常使用公共交通。 | Im Vergleich zu Männern nutzen Frauen häufiger öffentliche Verkehrsmittel. # im Vergleich zu + Dat。
-i Mehr als die ___ der Befragten (über 50 %) sind dafür. | Hälfte # die Hälfte = 一半。
+i Mehr als die ___ der Befragten (über 50 %) ist dafür. | Hälfte # die Hälfte = 一半。
 c Knapp ein ___ der Befragten (etwa 24 %) lehnt den Vorschlag ab. | Viertel | Drittel | Fünftel | Halb # 约四分之一 → ein Viertel。
 c Die Ausgaben sind ___ 3 Prozent auf 120 Millionen Euro gestiegen. | um | auf | von | bei # 变化量 → um；终值 → auf。
 i Die Zahl der Einwohner hat sich ___. (nur noch halb so viele) | halbiert | sich halbieren # sich halbieren → halbiert。
@@ -349,7 +349,7 @@ i Die Ergebnisse weisen ___ ein ernstes Problem hin. | auf # hinweisen auf + Akk
 c ___ handelt es sich bei diesem Text? | Worum | Wovon | Worüber | Woran # es handelt sich um → worum。
 c Er setzt sich kritisch ___ der Theorie auseinander. | mit | über | an | gegen # sich auseinandersetzen mit。
 i Eine gute Ausbildung ist eine Voraussetzung ___ beruflichen Erfolg. | für # die Voraussetzung für + Akk。
-c Die Firma leidet ___ einem Mangel an Fachkräften. | unter | an | von | mit # leiden unter + Dat（外部情况）。
+c Die Firma leidet ___ einem Mangel an Fachkräften. | unter | auf | von | mit # leiden unter + Dat（外部情况）。
 m Verb ↔ Präposition | beitragen=zu;beruhen=auf;sich befassen=mit;abhängen=von;bestehen (Inhalt)=in #
 `)
   });

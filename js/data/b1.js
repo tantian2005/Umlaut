@@ -74,7 +74,7 @@
       '<div class="note"><b>denn</b> 也表示“因为”，但它不是从句连词：<i>…, denn ich <b>bin</b> krank.</i>（主句语序）</div>',
     ex: [
       C('Ich bleibe heute zu Hause, ___ ich krank bin.', ['weil', 'denn', 'obwohl', 'ob'], '动词 bin 在句末 → 从句连词。表示原因 → weil。denn 后要用主句语序。'),
-      C('Ich weiß nicht, ___ er heute noch kommt.', ['ob', 'dass', 'wenn', 'weil'], '不确定“是否” → ob。'),
+      C('Ich weiß nicht, ___ er heute noch kommt.', ['ob', 'als', 'wenn', 'weil'], '不确定“是否” → ob。'),
       C('___ es regnet, gehen wir spazieren.', ['Obwohl', 'Weil', 'Ob', 'Dass'], '下雨却去散步 → 让步：obwohl。'),
       O('我希望你很快就会好起来。', 'Ich hoffe, dass du bald wieder gesund bist.', 'dass 从句：bist 在句末。'),
       O('他说他明天给我打电话。', 'Er sagt, dass er mich morgen anruft.', '可分动词在从句中合写：anruft。'),
@@ -125,7 +125,7 @@
       O('吃完饭后，我们去散步了。', 'Nachdem wir gegessen hatten, gingen wir spazieren.', 'Plusquamperfekt + Präteritum。'),
       O('我小时候经常踢足球。', 'Als ich klein war, spielte ich oft Fußball.', '过去一个时期 → als。', { alt: ['Ich spielte oft Fußball, als ich klein war.'] }),
       C('Nachdem ich die Prüfung bestanden habe, ___ ich eine Party.', ['mache', 'machte', 'hatte gemacht', 'habe gemacht'], 'nachdem + Perfekt → 主句用 Präsens（将来意义）。'),
-      C('Es regnete, ___ wir im Urlaub waren.', ['als', 'wenn', 'wann', 'ob'], '过去一次性的时间段 → als。'),
+      C('Es regnete die ganze Zeit, ___ wir letzten Sommer in Italien waren.', ['als', 'wenn', 'wann', 'ob'], '过去一次性的时间段（letzten Sommer）→ als。'),
       M([['als', '当…时（过去一次）'], ['während', '在…期间'], ['bevor', '在…之前'], ['nachdem', '在…之后'], ['seit', '自从']], 'Konnektor ↔ 含义', '')
     ]
   });
@@ -264,7 +264,7 @@
       '<li><b>durch + Akk</b>：手段或原因 —— <i>durch ein Erdbeben</i></li></ul>' +
       ex('Hier darf nicht geraucht werden.', '这里禁止吸烟。'),
     ex: [
-      C('Das Haus ___ gerade renoviert.', ['wird', 'ist', 'hat', 'werden'], '正在进行的动作 → Präsens Passiv：wird + Partizip II。'),
+      C('Das Haus ___ gerade renoviert.', ['wird', 'wurden', 'hat', 'werden'], '正在进行的动作 → Präsens Passiv：wird + Partizip II。'),
       C('Das Museum ___ 1890 gebaut.', ['wurde', 'wird', 'ist', 'war'], '过去 → Präteritum Passiv：wurde gebaut。'),
       I('In Österreich ___ Deutsch gesprochen.', 'wird', 'werden', 'Präsens Passiv，主语 Deutsch → wird。'),
       I('Der Brief wurde gestern ___.', 'geschickt', 'schicken', 'wurde + Partizip II。'),
@@ -414,8 +414,8 @@
     ex: [
       C('Das ist das Auto ___ Vaters.', ['meines', 'meinem', 'meinen', 'mein'], 'Vater 阳性 Genitiv → meines Vaters。'),
       C('Die Farbe ___ Hauses gefällt mir.', ['des', 'dem', 'der', 'den'], 'Haus 中性 Genitiv → des Hauses。'),
-      C('___ des Regens sind wir zu Hause geblieben.', ['Wegen', 'Trotz', 'Während', 'Statt'], '原因 → wegen。'),
-      C('___ des schlechten Wetters sind wir spazieren gegangen.', ['Trotz', 'Wegen', 'Während', 'Innerhalb'], '天气差却去散步 → trotz。'),
+      C('___ des Regens sind wir zu Hause geblieben.', ['Wegen', 'Trotz', 'Innerhalb', 'Statt'], '原因 → wegen。'),
+      C('___ des schlechten Wetters sind wir spazieren gegangen.', ['Trotz', 'Wegen', 'Statt', 'Innerhalb'], '天气差却去散步 → trotz。'),
       I('Während ___ Urlaubs habe ich viel gelesen.', 'des', null, 'der Urlaub 阳性 Genitiv → des Urlaubs。'),
       I('Das Büro ___ Firma ist im dritten Stock.', 'der', null, 'die Firma 阴性 Genitiv → der。'),
       C('Das ist die Tasche ___ Frau.', ['einer', 'einen', 'eine', 'einem'], '阴性 Genitiv → einer。'),

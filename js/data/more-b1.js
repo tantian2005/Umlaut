@@ -22,14 +22,14 @@ m Infinitiv ↔ Präteritum | schreiben=schrieb;fahren=fuhr;helfen=half;nehmen=n
 
   X('b1-nebensatz', `
 c Ich rufe dich an, ___ ich die Ergebnisse habe. | sobald | obwohl | ob | dass # sobald = 一……就；动词放句末。
-c Der Arzt fragt, ___ ich regelmäßig Medikamente nehme. | ob | dass | weil | wann # 一般疑问的间接问句 → ob。
+c Der Arzt fragt, ___ ich regelmäßig Medikamente nehme. | ob | dass | weil | wenn # 一般疑问的间接问句 → ob。
 i Ich weiß nicht, warum der Zug heute so viel Verspätung ___. | hat | haben # 间接疑问句：动词放句末。
 c Sie hat die Stelle bekommen, ___ sie wenig Erfahrung hatte. | obwohl | weil | damit | ob # 让步 → obwohl。
 o 我觉得房租太高了。 | Ich finde, dass die Miete zu hoch ist. # dass 从句，ist 在句末。
 o 你知道考试什么时候开始吗？ | Weißt du, wann die Prüfung beginnt? # 间接疑问句。
 c Er kann nicht kommen, ___ er arbeiten muss. | weil | obwohl | denn | ob # 原因 + 动词在末尾 → weil。
 i Ich hoffe, dass mein Antrag bald bearbeitet ___. | wird | werden, Passiv # 从句末尾：bearbeitet wird。
-c Kannst du mir sagen, ___ man hier parken darf? | ob | dass | wenn | weil # 是否 → ob。
+c Kannst du mir sagen, ___ man hier parken darf? | ob | als | obwohl | weil # 是否 → ob。
 i Weil der Vermieter die Heizung nicht ___, ist es in der Wohnung kalt. | repariert;repariert hat | reparieren # 从句中变位动词放句末。
 c ___ du Fragen zur Anmeldung hast, schreib mir eine E-Mail. | Wenn | Ob | Dass | Obwohl # 条件 → wenn。
 i Viele Leute wissen nicht, dass man den Müll trennen ___. | muss | müssen # 情态动词放句末。
@@ -56,12 +56,12 @@ m Wo steht das Verb? | Aussagesatz=Position 2;Nebensatz=am Ende;Ja/Nein-Frage=Po
 c ___ ich die Wohnung gefunden hatte, unterschrieb ich sofort den Mietvertrag. | Nachdem | Bevor | Während | Seit # Plusquamperfekt + Präteritum → nachdem。
 c ___ du das Formular abschickst, lies es bitte noch einmal durch. | Bevor | Nachdem | Seit | Als # 寄出之前 → bevor。
 i ___ ich in Deutschland studiere, spreche ich jeden Tag Deutsch. | Seit;Seitdem | 自从 # 从过去持续到现在 → seit(dem)。
-c ___ meine Eltern zu Besuch waren, haben wir viel unternommen. | Als | Wenn | Wann | Bis # 过去一次 → als。
+c ___ meine Eltern letzten Monat zu Besuch waren, haben wir viel unternommen. | Als | Wenn | Wann | Bis # 过去一次 → als。
 i Bitte warte, ___ der Arzt dich aufruft. | bis | 直到 # 直到 → bis。
 c ___ des Studiums hat sie in einem Café gejobbt. | Während | Als | Nachdem | Bevor # während 也可作介词 + Genitiv。
 o 每次下雨，我都坐公交车。 | Immer wenn es regnet, fahre ich mit dem Bus. # 反复发生 → (immer) wenn；从句在前，主句动词紧跟。
 o 出发前我们检查了所有文件。 | Bevor wir losfuhren, prüften wir alle Unterlagen. | Wir prüften alle Unterlagen, bevor wir losfuhren. # bevor 从句。
-i Nachdem der Kurs zu Ende ___, bekamen alle ein Zertifikat. | war | sein # Plusquamperfekt：war … zu Ende（gewesen）。
+i Nachdem der Kurs zu Ende gegangen ___, bekamen alle ein Zertifikat. | war | sein # Plusquamperfekt：zu Ende gegangen war（gehen 用 sein）。
 c Sobald ich ankomme, ___ ich dich an. | rufe | rief | gerufen | rufen # sobald 从句在前 → 主句动词紧跟。
 c ___ ich jung war, wollte ich Pilot werden. | Als | Wenn | Wann | Ob # 过去的一个时期 → als。
 i Während du einkaufst, ___ ich das Essen. | koche | kochen # 主句动词紧跟逗号。
@@ -150,7 +150,7 @@ m Aktiv ↔ Passiv | Man baut das Haus.=Das Haus wird gebaut.;Man baute das Haus
   X('b1-futur', `
 c Ich bin sicher, dass du die Prüfung ___. | bestehen wirst | wirst bestehen | bestehst wirst | bestanden wird # 从句：不定式 + wirst。
 i Laut Wetterbericht ___ es morgen schneien. | wird # Futur I：wird + 不定式。
-c Er ___ sicher bald eine neue Stelle finden. | wird | würde | wurde | werden # 预测 → wird。
+c Er ___ sicher bald eine neue Stelle finden. | wird | werdet | wurde | werden # 预测 → wird。
 i Die Preise ___ im nächsten Jahr weiter steigen. | werden # 复数 → werden。
 o 我明天给你回电话。 | Ich werde dich morgen zurückrufen. | Morgen werde ich dich zurückrufen. # werde + 不定式。
 c Seine Tochter möchte Ärztin ___. | werden | wird | worden | zu werden # 情态动词 + 不定式 werden。

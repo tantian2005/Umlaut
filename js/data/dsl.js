@@ -17,8 +17,8 @@
       var line = raw.trim();
       if (!line || line.indexOf('//') === 0) return;
       var t = line.charAt(0), rest = line.slice(2).trim(), e = '', p = null;
-      var k = rest.lastIndexOf(' # ');
-      if (k >= 0) { e = rest.slice(k + 3).trim(); rest = rest.slice(0, k); }
+      var k = rest.search(/ #( |$)/);
+      if (k >= 0) { e = rest.slice(k + 2).trim(); rest = rest.slice(0, k); }
       if (rest.charAt(0) === '{') {
         var close = rest.indexOf('}');
         p = rest.slice(1, close).trim();

@@ -329,8 +329,8 @@ renovieren|装修|B2|v|
 reparieren|修理|B1|v|
 trennen|分开；分类|B1|v|
 erledigen|处理完|B1|v|
-ausfüllen|填写|B1|v|füllen,ausgefüllt
-einreichen|提交|B2|v|eingereicht,reichen
+aus·füllen|填写|B1|v|ausgefüllt
+ein·reichen|提交|B2|v|eingereicht
 bearbeiten|处理|B2|v|
 veröffentlichen|发表|B2|v|
 entwickeln|发展、开发|B2|v|
@@ -344,11 +344,11 @@ ab·nehmen|减少|B2|v|nimmt,nahm,abgenommen
 zurück·gehen|下降|C1|v|ging,zurückgegangen
 wachsen|增长|B2|v|wächst,wuchs,gewachsen
 sich verdoppeln|翻倍|C1|v|verdoppelt
-beitragen|有助于|C1|v|trägt,trug,beigetragen
+bei·tragen|有助于|C1|v|trägt,trug,beigetragen
 beruhen|基于|C1|v|
 sich auswirken|影响|C1|v|wirkt
 sich befassen|研究、探讨|C1|v|befasst
-sich auseinandersetzen|探讨、钻研|C1|v|setzt,auseinandergesetzt
+sich auseinander·setzen|探讨、钻研|C1|v|setzt,auseinandergesetzt
 hin·weisen|指出|C1|v|weisen,wies,hingewiesen
 behaupten|声称|B2|v|
 betonen|强调|C1|v|
@@ -363,7 +363,7 @@ reduzieren|减少|B2|v|
 investieren|投资|C1|v|
 analysieren|分析|C1|v|
 verschieben|推迟|B2|v|verschoben
-absagen|取消|B1|v|abgesagt
+ab·sagen|取消|B1|v|abgesagt
 teil·nehmen|参加|B1|v|nimmt,nahm,teilgenommen
 sich kümmern|照顾|B1|v|kümmert
 sich gewöhnen|习惯|B1|v|gewöhnt
@@ -385,7 +385,7 @@ stören|打扰|B1|v|
 erklären|解释|B1|v|
 empfehlen|推荐|B1|v|empfiehlt,empfahl,empfohlen,empfohlene
 übersetzen|翻译|B1|v|
-umziehen|搬家；换衣服|B1|v|zieht,zog,umgezogen
+um·ziehen|搬家；换衣服|B1|v|zieht,zog,umgezogen
 verlieren|失去|B1|v|verlor,verloren
 gewinnen|赢|B1|v|gewann,gewonnen
 sparen|节省|B1|v|

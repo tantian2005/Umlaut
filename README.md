@@ -1,4 +1,4 @@
-# Grammatik
+# Umlaut
 
 Deutsche Grammatik B1–B2 lernen — Lernpfad, Lektionen, Wiederholung falscher Antworten, Serie & XP.
 Läuft im Browser auf Computer und Handy, offline-fähig (PWA), ohne Build-Schritt.
@@ -21,14 +21,14 @@ Lernpfad nach Goethe-Kursstufen, Ziel: Grammatik auf TestDaF-Niveau TDN 4.
 
 | Kapitel | Thema | Einheiten | Übungen |
 |---|---|---|---|
-| B1.1 | Grundlagen festigen | 8 | 225 |
-| B1.2 | Sätze erweitern | 8 | 220 |
-| B2.1 | Argumentieren & vermuten | 9 | 235 |
-| B2.2 | Schriftsprache | 8 | 207 |
-| C1.1 | Wissenschaftssprache (TestDaF) | 5 | 109 |
-| C1.2 | TestDaF-Schreiben | 5 | 107 |
+| B1.1 | Grundlagen festigen | 8 | 241 |
+| B1.2 | Sätze erweitern | 8 | 236 |
+| B2.1 | Argumentieren & vermuten | 9 | 253 |
+| B2.2 | Schriftsprache | 8 | 223 |
+| C1.1 | Wissenschaftssprache (TestDaF) | 5 | 119 |
+| C1.2 | TestDaF-Schreiben | 5 | 117 |
 
-43 Einheiten, 1103 Übungen (Auswahl, Lücke, Satzbau mit Drag & Drop, Paare), ein Abschnittstest pro Kapitel
+43 Einheiten, 1189 Übungen (Auswahl, Lücke, Satzbau mit Drag & Drop, Paare, Übersetzung; Schwierigkeit steigt von Lektion zu Lektion), ein Abschnittstest pro Kapitel
 (15 Fragen, bestanden ab 80 %). Grammatik-Erklärungen auf Chinesisch, Oberfläche Deutsch / Chinesisch.
 
 Wortschatz: 446 Prüfungswörter (Goethe B1/B2, TestDaF), die alle in den Übungssätzen vorkommen. Nach jeder Antwort

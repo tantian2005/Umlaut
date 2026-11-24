@@ -79,6 +79,10 @@
     'Schriftsprache': '书面语', 'Wissenschaftssprache': '学术语言', 'TestDaF-Schreiben': 'TestDaF 写作',
     'Ziel: TestDaF TDN 4': '目标：TestDaF 4 分', 'Wortschatz': '词汇', 'Wörter': '词汇', 'Tests bestanden': '通过的测试',
     'Neue Wörter üben': '练习未学词汇', '{n} Übungen mit neuen Wörtern': '{n} 道题含未学词汇', 'Suchen': '搜索',
+    'Niveau wählen': '选择难度', 'Indirekte Rede (Schriftsprache): Was passt?': '间接引语（书面语）：哪个正确？',
+    'Indirekte Rede, Konjunktiv I': '间接引语（第一虚拟式）', 'Übersetze ins Deutsche.': '翻译成德语', 'Ich hatte recht': '我的答案也对',
+    'Deine Übersetzung': '你的译文', 'Lernkalender': '学习日历', '{n} Lerntage im letzten Jahr': '过去一年学习 {n} 天',
+    'Weniger': '少', 'Mehr': '多', 'Nur neue': '只看未学',
     'Alle': '全部', 'Neu': '未学', 'Gelernt': '已学', 'Keine Treffer': '无结果'
   };
 
@@ -101,9 +105,13 @@
 
   function lang() { return (G.store && G.store.state.settings.lang) === 'zh' ? 'zh' : 'de'; }
 
+  var GENRE = { 'Zeitungsmeldung': '新闻短讯', 'E-Mail': '邮件', 'Forum': '论坛帖子', 'Ratgeber': '生活指南', 'Uni-Info': '大学通知',
+    'Studie': '研究报告', 'Wohnungsanzeige': '租房广告', 'Stellenanzeige': '招聘广告', 'Grafikbeschreibung': '图表描述', 'Stellungnahme': '议论文' };
   var PREFIX = { 'Auflösen: ': '改写为关系从句：', 'Nominalstil: ': '改为名词化表达：', 'Verbalstil: ': '改为动词句：' };
   function t(key, vars) {
     var s = (lang() === 'zh' && ZH[key]) || key;
+    var g = lang() === 'zh' && s === key && /^(.+): (Was passt\?|Ergänze\.)$/.exec(key);
+    if (g && GENRE[g[1]]) s = GENRE[g[1]] + '：' + (g[2] === 'Ergänze.' ? '填空' : '哪个正确？');
     if (lang() === 'zh' && s === key) {
       for (var p in PREFIX) if (key.indexOf(p) === 0) { s = PREFIX[p] + key.slice(p.length); break; }
     }

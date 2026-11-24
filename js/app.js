@@ -23,6 +23,8 @@
   var units = [];
   chapters.forEach(function (c) { c.units.forEach(function (u) { u.ch = c.id; units.push(u); }); });
   (window.GRAMMATIK_UNITS || []).forEach(function (u) { if (!u.ch) { u.ch = u.level; units.push(u); } });
+  var TIPS_PLUS = window.GRAMMATIK_TIPS_PLUS || {};
+  units.forEach(function (u) { if (TIPS_PLUS[u.id] && !u._plus) { u.tip += TIPS_PLUS[u.id]; u._plus = true; } });
   var chapterById = {};
   chapters.forEach(function (c) { chapterById[c.id] = c; });
   units.forEach(function (u) {
@@ -55,6 +57,7 @@
     crown: '<svg viewBox="0 0 24 24"><path d="M3 7.5 7.5 11 12 4l4.5 7L21 7.5 19.5 18h-15zM4.5 19.5h15V21h-15z"/></svg>',
     book: '<svg viewBox="0 0 24 24"><path d="M5 3h11a3 3 0 0 1 3 3v15H7a2 2 0 0 1-2-2zm2 14v2h10v-2z"/></svg>',
     trophy: ICON.trophy,
+    chev: '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5z"/></svg>',
     lessons: '<svg viewBox="0 0 24 24"><path fill="#3b5bdb" d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path fill="#fff" d="M7 8h8v1.6H7zm0 3.5h8v1.6H7z"/><path fill="#8b3fd9" d="M18 7h2v13a2 2 0 0 1-2 2H7v-2h11z"/></svg>',
     acc: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#18a058"/><path fill="#fff" d="m10.5 16.2-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4z"/></svg>',
     best: '<svg viewBox="0 0 24 24"><path fill="#f2a900" d="m12 2 3 6.3 6.9.9-5 4.8 1.2 6.9L12 17.6 5.9 20.9 7.1 14l-5-4.8 6.9-.9z"/></svg>',
@@ -220,6 +223,27 @@
     s.el.querySelector('[data-act="go"]').onclick = function () { s.close(); startUnit(u); };
   }
 
+  // quick jump between difficulty levels
+  function chapterSheet() {
+    var s = openSheet(
+      '<div class="sheet-head"><div><h2>' + t('Niveau wählen') + '</h2></div>' +
+        '<button class="icon-btn" data-close aria-label="' + t('Schließen') + '">' + UI.close + '</button></div>' +
+      '<div class="list">' + chapters.map(function (c) {
+        var done = c.units.filter(function (u) { return unitState(u) === 'done'; }).length;
+        var score = S.testScore(c.id);
+        return '<button class="row ch-row" data-ch="' + c.id + '"><span class="tag' + lvc(c.level) + '">' + c.id + '</span>' +
+          '<span class="grow"><span class="t">' + esc(t(c.title)) + '</span><div class="mini-meter"><i style="width:' + (100 * done / c.units.length) + '%"></i></div></span>' +
+          '<span class="pct">' + (score >= S.PASS ? UI.trophy.replace('<svg', '<svg width="20" height="20" fill="#f2a900"') : done + ' / ' + c.units.length) + '</span></button>';
+      }).join('') + '</div>', { wide: true });
+    s.el.querySelectorAll('[data-ch]').forEach(function (b) {
+      b.onclick = function () {
+        s.close();
+        var sec = document.getElementById('ch-' + b.dataset.ch);
+        if (sec) sec.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      };
+    });
+  }
+
   function startUnit(u) {
     S.state.settings.lastUnit = u.id;
     S.save();
@@ -339,21 +363,23 @@
       var lv = ch.id, list = ch.units, lvl = ch.level.toLowerCase();
       if (!list.length) return;
       var done = list.filter(function (u) { return unitState(u) === 'done'; }).length;
-      html += '<section aria-label="' + lv + '">' +
-        '<div class="section-banner ' + lvl + '" id="lv-' + lv + '"><div><small>' + lv + (ch.goal ? ' · ' + t('Ziel: TestDaF TDN 4') : ' · Goethe') + '</small><strong>' + esc(t(ch.title)) + '</strong></div>' +
-        '<span class="chip" style="color:#fff">' + UI.crown.replace('<svg', '<svg fill="#fff"') + done + ' / ' + list.length + '</span></div>' +
+      html += '<section class="chapter" aria-label="' + lv + '" id="ch-' + lv + '">' +
+        '<button class="section-banner ' + lvl + '" data-chapters aria-haspopup="dialog"><span class="sb-text"><small>' + lv + '</small><strong>' + esc(t(ch.title)) + UI.chev + '</strong></span>' +
+        '<span class="chip" style="color:#fff">' + UI.crown.replace('<svg', '<svg fill="#fff"') + done + ' / ' + list.length + '</span></button>' +
         '<div class="path">';
       list.forEach(function (u, i) {
         var st = unitState(u);
         var n = Math.min(S.unit(u.id).lessons, need(u));
         var off = OFFS[i % OFFS.length] * 52;
-        var circ = 2 * Math.PI * 46;
-        var ring = st === 'started'
-          ? '<svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="46"/><circle class="fill" cx="50" cy="50" r="46" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - n / need(u))) + '"/></svg>' : '';
+        // progress ring lies on the ground around the base of the 3D button (same tilt as its top face)
+        var ORBIT = 'M50 89A47 43 0 1 1 50 3A47 43 0 1 1 50 89';
+        var ring = (st === 'started' || (st === 'fresh' && cur && cur.id === u.id && n > 0))
+          ? '<svg class="orbit ' + lvl + '" viewBox="0 0 100 92" aria-hidden="true"><path class="track" d="' + ORBIT + '"/>' +
+            '<path class="fill" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - n / need(u))) + '" d="' + ORBIT + '"/></svg>' : '';
         var isCur = cur && cur.id === u.id;
         html += '<div class="node-wrap' + (isCur ? ' current' : '') + '" style="transform:translateX(' + off + 'px)">' +
-          (isCur ? '<div class="bubble">' + t(n ? 'Weiter' : 'Start') + '</div>' : '') +
-          '<button class="node ' + lvl + ' ' + (isCur && st === 'fresh' ? 'started' : st) + '" data-u="' + u.id + '" aria-label="' + esc(t('{t}, {n} von {m}', { t: u.title, n: n, m: need(u) })) + '">' + ring + unitIcon(u, st) + '</button>' +
+          (isCur ? '<div class="bubble">' + t(n ? 'Weiter' : 'Start') + '</div>' : '') + ring +
+          '<button class="node ' + lvl + ' ' + (isCur && st === 'fresh' ? 'started' : st) + '" data-u="' + u.id + '" aria-label="' + esc(t('{t}, {n} von {m}', { t: u.title, n: n, m: need(u) })) + '">' + unitIcon(u, st) + '</button>' +
           '<div class="node-label"><span lang="de">' + esc(u.title) + '</span>' + (zhUI ? '<small>' + esc(G.i18n.unitZh(u.id)) + '</small>' : '') + '</div></div>';
       });
       var score = S.testScore(lv), passed = score >= S.PASS;
@@ -367,6 +393,7 @@
     view.querySelectorAll('[data-test]').forEach(function (b) {
       b.onclick = function () { testSheet(b.dataset.test); };
     });
+    view.querySelectorAll('[data-chapters]').forEach(function (b) { b.onclick = chapterSheet; });
     view.querySelectorAll('.node[data-u]').forEach(function (b) {
       b.onclick = function () { unitSheet(unitById[b.dataset.u]); };
     });
@@ -464,14 +491,7 @@
       days.push({ k: k, v: v, d: WD[new Date(+p[0], +p[1] - 1, +p[2]).getDay()] });
       if (v > max) max = v;
     }
-    var heat = '', N = 15 * 7;
-    var start = S.shiftDay(today, -(N - 1));
-    // align so that the last column ends today
-    for (i = 0; i < N; i++) {
-      var dk = S.shiftDay(start, i), x = st.days[dk] || 0;
-      var lvl = x === 0 ? '' : x < goal / 2 ? 'l1' : x < goal ? 'l2' : 'l3';
-      heat += '<i class="' + lvl + '" title="' + dk + ': ' + x + ' XP"></i>';
-    }
+    var cal = calendarHTML(st, today, goal);
     var ws = wordStats();
     view.innerHTML = '<div>' +
       '<div class="page-head"><h1>' + t('Statistik') + '</h1></div>' +
@@ -489,12 +509,43 @@
         var h = d.v ? Math.max(6, 100 * d.v / max) : 4;
         return '<div class="bar' + (d.v >= goal ? ' goal' : '') + (d.v ? '' : ' zero') + (d.k === today ? ' today' : '') + '"><em>' + (d.v || '') + '</em><i style="height:' + h + '%"></i><span>' + d.d + '</span></div>';
       }).join('') + '</div></div>' +
-      '<div class="card" style="margin-top:16px"><h3>' + t('15 Wochen') + '</h3><div class="heat" style="grid-template-rows:repeat(7,1fr);grid-auto-flow:column">' + heat + '</div></div>' +
+      '<div class="card" style="margin-top:16px"><h3>' + t('Lernkalender') + ' <span class="count">' + t('{n} Lerntage im letzten Jahr', { n: cal.days }) + '</span></h3>' + cal.html + '</div>' +
       '<div class="card" style="margin-top:16px"><h3>' + t('Einheiten') + '</h3><div class="prog-list">' +
         chapters.map(function (c) { return progressRow(c.id, c.units.filter(function (u) { return unitState(u) === 'done'; }).length, c.units.length, c.level); }).join('') +
       '</div></div>' +
       '</div>';
   }
+  // GitHub-style year calendar: one column per week (Mon–Sun), colour by XP relative to the daily goal
+  var MONTHS = { de: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'], zh: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'] };
+  function calendarHTML(st, today, goal) {
+    var p = today.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
+    var dow = (d.getDay() + 6) % 7;                 // 0 = Monday
+    var WEEKS = 53;
+    var start = S.shiftDay(today, -(dow + 7 * (WEEKS - 1)));
+    var cells = '', months = '', lastMonth = -1, active = 0;
+    var mnames = MONTHS[G.i18n.lang()] || MONTHS.de;
+    for (var w = 0; w < WEEKS; w++) {
+      var wk = S.shiftDay(start, w * 7), wp = wk.split('-'), m = +wp[1] - 1;
+      months += '<span style="grid-column:' + (w + 1) + '">' + (m !== lastMonth && +wp[2] <= 7 ? mnames[m] : '') + '</span>';
+      if (+wp[2] <= 7) lastMonth = m;
+      for (var k = 0; k < 7; k++) {
+        var key = S.shiftDay(start, w * 7 + k);
+        if (key > today) { cells += '<i class="future"></i>'; continue; }
+        var x = st.days[key] || 0;
+        if (x) active++;
+        var lvl = x === 0 ? '' : x < goal / 2 ? 'l1' : x < goal ? 'l2' : x < goal * 2 ? 'l3' : 'l4';
+        cells += '<i class="' + lvl + (key === today ? ' today' : '') + '" title="' + key + ' · ' + x + ' XP"></i>';
+      }
+    }
+    var wd = G.i18n.weekdays();
+    var html = '<div class="cal-scroll"><div class="cal">' +
+      '<div class="cal-months">' + months + '</div>' +
+      '<div class="cal-days"><span></span><span>' + wd[1] + '</span><span></span><span>' + wd[3] + '</span><span></span><span>' + wd[5] + '</span><span></span></div>' +
+      '<div class="cal-grid">' + cells + '</div></div></div>' +
+      '<div class="cal-legend">' + t('Weniger') + '<i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>' + t('Mehr') + '</div>';
+    return { html: html, days: active };
+  }
+
   function stat(icon, val, label) {
     return '<div class="stat">' + icon + '<div><b>' + val + '</b><span>' + label + '</span></div></div>';
   }
@@ -526,8 +577,12 @@
       (unseenItems ? '<button class="row" data-act="words-go"><span class="grow"><span class="t">' + t('Neue Wörter üben') + '</span><span class="s" style="display:block">' + t('{n} Übungen mit neuen Wörtern', { n: unseenItems }) + '</span></span><span class="btn small">' + t('Start') + '</span></button>' : '') +
       '<div class="word-tools">' +
         '<input type="search" class="search" placeholder="' + t('Suchen') + '" aria-label="' + t('Suchen') + '" value="' + esc(wf.q) + '">' +
-        seg('lv', [['all', t('Alle')], ['B1', 'B1'], ['B2', 'B2'], ['C1', 'C1']], wf.lv) +
-        seg('st', [['all', t('Alle')], ['new', t('Neu')], ['seen', t('Gelernt')]], wf.st) +
+        '<div class="word-filter">' +
+          '<div class="ltabs" role="tablist">' + [['all', t('Alle'), ws.total]].concat(levels.map(function (lv) { return [lv, lv, (ws.by[lv] || {}).total || 0]; })).map(function (o) {
+            return '<button role="tab" aria-selected="' + (wf.lv === o[0]) + '" data-wf="lv" data-v="' + o[0] + '">' + o[1] + '<small>' + o[2] + '</small></button>';
+          }).join('') + '</div>' +
+          '<button class="fchip" aria-pressed="' + (wf.st === 'new') + '" data-wf="st" data-v="' + (wf.st === 'new' ? 'all' : 'new') + '">' + t('Nur neue') + '</button>' +
+        '</div>' +
       '</div>' +
       (rows.length ? '<div class="word-list">' + rows.slice(0, wf.shown).map(function (w) {
         var n = seen[w.id] || 0;
@@ -605,10 +660,19 @@
       };
     });
     view.querySelector('[data-act="export"]').onclick = function () {
+      var name = 'umlaut-' + S.dayKey() + '.json';
       var blob = new Blob([S.exportJSON()], { type: 'application/json' });
+      var touch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      if (touch && window.File && navigator.canShare) {
+        var f = new File([blob], name, { type: 'application/json' });
+        if (navigator.canShare({ files: [f] })) {
+          navigator.share({ files: [f], title: 'Umlaut' }).catch(function () {});
+          return;
+        }
+      }
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'grammatik-' + S.dayKey() + '.json';
+      a.download = 'umlaut-' + S.dayKey() + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     };
@@ -640,7 +704,7 @@
     var nav = r;
     if (r === 'unit') { viewUnit(parts[1]); nav = 'learn'; }
     else if (r === 'review') viewReview();
-    else if (r === 'stats') viewStats();
+    else if (r === 'stats') { viewStats(); var cs = view.querySelector('.cal-scroll'); if (cs) cs.scrollLeft = cs.scrollWidth; }
     else if (r === 'words') viewWords();
     else if (r === 'settings') viewSettings();
     else { viewLearn(); nav = 'learn'; }
@@ -660,7 +724,13 @@
     else document.documentElement.removeAttribute('data-theme');
   }
 
-  G.app = { refresh: refresh, toast: toast };
+  // back to the learning path, scrolled to the current unit
+  function home() {
+    viewLearn._scrolled = false;
+    if (location.hash.replace(/^#\/?/, '') !== '') location.replace('#/');
+    else { refresh(); window.scrollTo(0, 0); }
+  }
+  G.app = { refresh: refresh, toast: toast, home: home };
   applyTheme();
   G.i18n.applyStatic();
   window.addEventListener('hashchange', onHash);
