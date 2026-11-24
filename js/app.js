@@ -354,7 +354,7 @@
     });
     document.documentElement.style.setProperty('--tb', topbar.offsetHeight + 'px');
     var badge = document.querySelector('[data-badge="review"]');
-    badge.hidden = !due;
+    badge.hidden = !due || S.state.settings.reviewBadge === false;
     badge.textContent = due > 99 ? '99+' : due;
   }
   function progressRow(lv, done, total, level) {
@@ -636,6 +636,7 @@
         (G.sound.canSpeak() ? sw('tts', t('Vorlesen')) : '') +
         (G.sound.canSpeak() && s.tts ? sw('autoSpeak', t('Nach jeder Antwort vorlesen')) : '') +
         (G.sound.canVibrate() ? sw('haptic', t('Vibration')) : '') +
+        sw('reviewBadge', t('Wiederholungs-Hinweis')) +
         '<div class="setting"><span>' + t('Design') + '</span>' + seg('theme', [['auto', t('Auto')], ['light', t('Hell')], ['dark', t('Dunkel')]], s.theme) + '</div>' +
       '</div>' +
       '<h2 class="section-title">' + t('Daten') + ' <button class="info" data-tip="' + t('Fortschritt wird nur in diesem Browser gespeichert. Mit Export/Import auf ein anderes Gerät übertragen.') + '" aria-label="' + t('Info: Fortschritt wird nur in diesem Browser gespeichert') + '">i</button></h2>' +
@@ -664,7 +665,7 @@
         S.set(k, i.checked);
         if (i.checked && k === 'sound') G.sound.ok();
         if (i.checked && (k === 'tts' || k === 'autoSpeak')) G.sound.speak('Hallo! Viel Spaß beim Lernen.');
-        if (k === 'tts') refresh();
+        if (k === 'tts' || k === 'reviewBadge') refresh();
       };
     });
     view.querySelector('[data-act="export"]').onclick = function () {

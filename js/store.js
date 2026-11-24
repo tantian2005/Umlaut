@@ -19,7 +19,7 @@
       items: {},         // itemId -> { c, w, box, due, last }
       totals: { answered: 0, correct: 0, lessons: 0, ms: 0 },
       settings: {
-        goal: 20, sound: true, tts: true, autoSpeak: true, haptic: true, theme: 'auto',
+        goal: 20, sound: true, tts: true, autoSpeak: true, haptic: true, reviewBadge: true, theme: 'auto',
         lang: /^zh/i.test((navigator.languages && navigator.languages[0]) || navigator.language || '') ? 'zh' : 'de'
       }
     };
