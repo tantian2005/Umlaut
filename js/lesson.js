@@ -566,7 +566,7 @@
           }
           if (!drag) return;
           justDragged = true;
-          setTimeout(function () { justDragged = false; }, 0);
+          setTimeout(function () { justDragged = false; }, 400);
           finishDrag(drag, k, fromPos, ev.type !== 'pointercancel');
         }
         document.addEventListener('pointermove', move, { passive: false });
@@ -574,40 +574,45 @@
         document.addEventListener('pointercancel', up);
       });
     }
+    // Sortable-list behaviour: a tile dragged from the sentence keeps its own spot as the placeholder,
+    // so the other tiles never jump under the finger when the drag starts.
     function startDrag(el, ev) {
       var r = el.getBoundingClientRect();
       var ghost = el.cloneNode(true);
       ghost.className = 'tile tile-drag';
       ghost.style.width = r.width + 'px';
       document.body.appendChild(ghost);
-      var slot = document.createElement('span');
-      slot.className = 'tile slot';
-      slot.style.width = r.width + 'px';
-      el.classList.add('dragging');
-      return { el: el, ghost: ghost, slot: slot, dx: ev.clientX - r.left, dy: ev.clientY - r.top, inside: false, index: 0 };
+      var fromBuild = el.parentNode === build, slot;
+      if (fromBuild) { slot = el; el.classList.add('slot', 'placeholder'); }
+      else {
+        slot = document.createElement('span');
+        slot.className = 'tile slot';
+        slot.style.width = r.width + 'px';
+        el.classList.add('dragging');
+      }
+      return { el: el, ghost: ghost, slot: slot, fromBuild: fromBuild, dx: ev.clientX - r.left, dy: ev.clientY - r.top, inside: fromBuild, index: 0 };
     }
     function placeSlot(d, x, y) {
       var br = build.getBoundingClientRect();
       d.inside = x > br.left - 24 && x < br.right + 24 && y > br.top - 24 && y < br.bottom + 24;
       build.classList.toggle('over', d.inside);
-      if (!d.inside) { if (d.slot.parentNode) d.slot.remove(); return; }
-      var items = Array.prototype.filter.call(build.children, function (c) { return c !== d.slot && c !== d.el; });
+      if (d.fromBuild) d.slot.classList.toggle('leaving', !d.inside);
+      if (!d.inside) { if (!d.fromBuild && d.slot.parentNode) d.slot.remove(); return; }
+      var items = Array.prototype.filter.call(build.children, function (c) { return c !== d.slot; });
       var idx = items.length;
       for (var i = 0; i < items.length; i++) {
         var r = items[i].getBoundingClientRect();
         if (y < r.top || (y <= r.bottom && x < r.left + r.width / 2)) { idx = i; break; }
       }
       d.index = idx;
-      if (d.el.parentNode === build) d.el.style.display = 'none';
-      build.insertBefore(d.slot, items[idx] || null);
+      if (items[idx] !== d.slot.nextSibling || !d.slot.parentNode) build.insertBefore(d.slot, items[idx] || null);
     }
     function finishDrag(d, k, fromPos, commit) {
       d.ghost.remove();
-      d.slot.remove();
-      d.el.classList.remove('dragging');
-      d.el.style.display = '';
+      d.el.classList.remove('dragging', 'slot', 'placeholder', 'leaving');
+      if (!d.fromBuild) d.slot.remove();
       build.classList.remove('over');
-      if (!commit) return;
+      if (!commit) { redraw(); return; }
       var next = chosen.slice();
       if (fromPos >= 0) next.splice(fromPos, 1);
       if (d.inside) next.splice(d.index, 0, k);
