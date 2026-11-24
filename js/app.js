@@ -380,15 +380,15 @@
         var st = unitState(u);
         var n = Math.min(S.unit(u.id).lessons, need(u));
         var off = OFFS[i % OFFS.length] * 52;
-        // lesson progress as small segments under the button (never overlaps it)
-        var segs = '';
-        if (st === 'started') { for (var si = 0; si < need(u); si++) segs += '<i class="' + (si < n ? 'on' : '') + '"></i>'; }
-        var ring = segs ? '<div class="node-prog ' + lvl + '" aria-hidden="true">' + segs + '</div>' : '';
         var isCur = cur && cur.id === u.id;
-        html += '<div class="node-wrap' + (isCur ? ' current' : '') + '" style="transform:translateX(' + off + 'px)">' +
+        // progress ring around the current button, with a gap so it never touches it
+        var ring = (isCur || st === 'started')
+          ? '<svg class="pring ' + lvl + '" viewBox="0 0 108 108" aria-hidden="true"><circle class="track" cx="54" cy="54" r="49"/>' +
+            (n ? '<circle class="fill" cx="54" cy="54" r="49" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - n / need(u))).toFixed(1) + '"/>' : '') + '</svg>' : '';
+        html += '<div class="node-wrap' + (isCur ? ' current' : '') + (ring ? ' has-ring' : '') + '" style="transform:translateX(' + off + 'px)">' + ring +
           (isCur ? '<div class="bubble">' + t(n ? 'Weiter' : 'Start') + '</div>' : '') +
           '<button class="node ' + lvl + ' ' + (isCur && st === 'fresh' ? 'started' : st) + '" data-u="' + u.id + '" aria-label="' + esc(t('{t}, {n} von {m}', { t: u.title, n: n, m: need(u) })) + '">' + unitIcon(u, st) + '</button>' +
-          ring + '<div class="node-label"><span lang="de">' + esc(u.title) + '</span>' + (zhUI ? '<small>' + esc(G.i18n.unitZh(u.id)) + '</small>' : '') + '</div></div>';
+          '<div class="node-label"><span lang="de">' + esc(u.title) + '</span>' + (zhUI ? '<small>' + esc(G.i18n.unitZh(u.id)) + '</small>' : '') + '</div></div>';
       });
       var score = S.testScore(lv), passed = score >= S.PASS;
       html += '<div class="node-wrap checkpoint">' +

@@ -924,12 +924,20 @@ html { background: var(--bg); }
 .tile.placeholder.leaving { opacity: .35; }
 
 /* ============ v9: feedback, press states, alignment ============ */
-/* 1. lesson progress under the current node */
-.node-prog { display: flex; justify-content: center; gap: 4px; margin: 8px auto 0; width: 76px; }
-.node-prog i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
-.node-prog i.on { background: var(--b1); }
-.node-prog.b2 i.on { background: var(--b2); }
-.node-prog.c1 i.on { background: var(--c1); }
+/* 1. progress ring around the current node (button 76x77 incl. depth; ring leaves an 8px gap) */
+.pring {
+  position: absolute; top: -15.5px; left: 50%; width: 108px; height: 108px; margin-left: -54px;
+  transform: rotate(-90deg); pointer-events: none; overflow: visible;
+}
+.pring circle { fill: none; stroke-width: 8; }
+.pring .track { stroke: var(--line); }
+.pring .fill { stroke: var(--b1); stroke-linecap: round; transition: stroke-dashoffset .6s; }
+.pring.b2 .fill { stroke: var(--b2); }
+.pring.c1 .fill { stroke: var(--c1); }
+.node-wrap.has-ring { margin-top: 22px; }
+.node-wrap.has-ring.current { margin-top: 58px; }
+.node-wrap.has-ring .node-label { margin-top: 28px; }
+.node-wrap.has-ring .bubble { bottom: calc(100% + 26px); }
 
 /* 2. pressed feedback on every tappable thing */
 button, a, .opt, .tile, .node, .wchip, .chip, .row, label.sw-row { -webkit-tap-highlight-color: transparent; }
@@ -978,3 +986,4 @@ label.sw-row .switch input { pointer-events: none; }
 .lesson-foot.part .btn.bad { --c: var(--gold); --cd: var(--gold-deep); }
 .tr-input.part { border-color: var(--gold); background: var(--gold-soft); }
 html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: none; }
+html { scrollbar-gutter: stable; }
