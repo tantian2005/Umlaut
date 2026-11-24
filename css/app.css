@@ -985,5 +985,5 @@ label.sw-row { cursor: pointer; }
 label.sw-row .switch input { pointer-events: none; }
 .lesson-foot.part .btn.bad { --c: var(--gold); --cd: var(--gold-deep); }
 .tr-input.part { border-color: var(--gold); background: var(--gold-soft); }
-html.sheet-open, html.sheet-open body { overflow: hidden; overscroll-behavior: none; }
+html.sheet-open { overscroll-behavior: none; }
 html { scrollbar-gutter: stable; }

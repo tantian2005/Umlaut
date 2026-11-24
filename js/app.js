@@ -151,6 +151,11 @@
       var inside = sheetEl.contains(e.target) && sheetEl.scrollHeight > sheetEl.clientHeight;
       if (!inside && e.cancelable) e.preventDefault();
     }, { passive: false });
+    // same for mouse wheel / trackpad, without touching the page's scroll position
+    scrim.addEventListener('wheel', function (e) {
+      var inside = sheetEl.contains(e.target) && sheetEl.scrollHeight > sheetEl.clientHeight;
+      if (!inside) e.preventDefault();
+    }, { passive: false });
     document.documentElement.classList.add('sheet-open');
     var x = scrim.querySelector('[data-close]');
     if (x) x.onclick = close;
