@@ -133,6 +133,7 @@
     var prevFocus = document.activeElement;
     function close() {
       scrim.remove();
+      if (!sheetRoot.querySelector('.scrim')) document.documentElement.classList.remove('sheet-open');
       document.removeEventListener('keydown', onKey, true);
       if (opts.onClose) opts.onClose();
       if (prevFocus && prevFocus.focus) prevFocus.focus({ preventScroll: true });
@@ -143,7 +144,14 @@
     scrim.addEventListener('click', function (e) { if (e.target === scrim) close(); });
     document.addEventListener('keydown', onKey, true);
     sheetRoot.appendChild(scrim);
-    swipeToClose(scrim.querySelector('.sheet'), close);
+    var sheetEl = scrim.querySelector('.sheet');
+    swipeToClose(sheetEl, close);
+    // the page behind a sheet must not scroll (iOS ignores overflow:hidden on body)
+    scrim.addEventListener('touchmove', function (e) {
+      var inside = sheetEl.contains(e.target) && sheetEl.scrollHeight > sheetEl.clientHeight;
+      if (!inside && e.cancelable) e.preventDefault();
+    }, { passive: false });
+    document.documentElement.classList.add('sheet-open');
     var x = scrim.querySelector('[data-close]');
     if (x) x.onclick = close;
     var f = scrim.querySelector('[data-autofocus]') || scrim.querySelector('button');
@@ -160,8 +168,9 @@
     sh.addEventListener('touchmove', function (e) {
       if (y0 === null) return;
       dy = Math.max(0, e.touches[0].clientY - y0);
+      if (dy > 0 && e.cancelable) e.preventDefault();
       sh.style.transform = 'translateY(' + dy + 'px)';
-    }, { passive: true });
+    }, { passive: false });
     sh.addEventListener('touchend', function () {
       if (y0 === null) return;
       y0 = null;
@@ -371,16 +380,15 @@
         var st = unitState(u);
         var n = Math.min(S.unit(u.id).lessons, need(u));
         var off = OFFS[i % OFFS.length] * 52;
-        // progress ring lies on the ground around the base of the 3D button (same tilt as its top face)
-        var ORBIT = 'M50 89A47 43 0 1 1 50 3A47 43 0 1 1 50 89';
-        var ring = (st === 'started' || (st === 'fresh' && cur && cur.id === u.id && n > 0))
-          ? '<svg class="orbit ' + lvl + '" viewBox="0 0 100 92" aria-hidden="true"><path class="track" d="' + ORBIT + '"/>' +
-            '<path class="fill" pathLength="100" stroke-dasharray="100" stroke-dashoffset="' + (100 * (1 - n / need(u))) + '" d="' + ORBIT + '"/></svg>' : '';
+        // lesson progress as small segments under the button (never overlaps it)
+        var segs = '';
+        if (st === 'started') { for (var si = 0; si < need(u); si++) segs += '<i class="' + (si < n ? 'on' : '') + '"></i>'; }
+        var ring = segs ? '<div class="node-prog ' + lvl + '" aria-hidden="true">' + segs + '</div>' : '';
         var isCur = cur && cur.id === u.id;
         html += '<div class="node-wrap' + (isCur ? ' current' : '') + '" style="transform:translateX(' + off + 'px)">' +
-          (isCur ? '<div class="bubble">' + t(n ? 'Weiter' : 'Start') + '</div>' : '') + ring +
+          (isCur ? '<div class="bubble">' + t(n ? 'Weiter' : 'Start') + '</div>' : '') +
           '<button class="node ' + lvl + ' ' + (isCur && st === 'fresh' ? 'started' : st) + '" data-u="' + u.id + '" aria-label="' + esc(t('{t}, {n} von {m}', { t: u.title, n: n, m: need(u) })) + '">' + unitIcon(u, st) + '</button>' +
-          '<div class="node-label"><span lang="de">' + esc(u.title) + '</span>' + (zhUI ? '<small>' + esc(G.i18n.unitZh(u.id)) + '</small>' : '') + '</div></div>';
+          ring + '<div class="node-label"><span lang="de">' + esc(u.title) + '</span>' + (zhUI ? '<small>' + esc(G.i18n.unitZh(u.id)) + '</small>' : '') + '</div></div>';
       });
       var score = S.testScore(lv), passed = score >= S.PASS;
       html += '<div class="node-wrap checkpoint">' +
@@ -617,7 +625,7 @@
       }).join('') + '</div>';
     }
     function sw(key, label) {
-      return '<div class="setting"><label for="sw-' + key + '">' + label + '</label><span class="switch"><input type="checkbox" role="switch" id="sw-' + key + '" data-sw="' + key + '"' + (s[key] ? ' checked' : '') + '><i></i></span></div>';
+      return '<label class="setting sw-row" for="sw-' + key + '"><span>' + label + '</span><span class="switch"><input type="checkbox" role="switch" id="sw-' + key + '" data-sw="' + key + '"' + (s[key] ? ' checked' : '') + '><i aria-hidden="true"></i></span></label>';
     }
     view.innerHTML = '<div>' +
       '<div class="page-head"><h1>' + t('Einstellungen') + '</h1></div>' +
@@ -725,8 +733,11 @@
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
     var dark = t === 'dark' || (t !== 'light' && darkMQ.matches);
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', dark ? '#12141a' : '#f6f7fb');
+    var old = document.querySelector('meta[name="theme-color"]');
+    var meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = dark ? '#12141a' : '#f6f7fb';
+    if (old) old.replaceWith(meta); else document.head.appendChild(meta);
   }
   if (darkMQ.addEventListener) darkMQ.addEventListener('change', applyTheme);
 
@@ -737,6 +748,10 @@
     else { refresh(); window.scrollTo(0, 0); }
   }
   G.app = { refresh: refresh, toast: toast, home: home };
+  document.addEventListener('touchstart', function () {}, { passive: true });
+  document.addEventListener('contextmenu', function (e) {
+    if (e.target.closest && e.target.closest('button, a, .tile, .opt, .node, img, .nav-link')) e.preventDefault();
+  });
   applyTheme();
   G.i18n.applyStatic();
   window.addEventListener('hashchange', onHash);

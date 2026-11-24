@@ -1,5 +1,5 @@
 /* Offline cache: network-first (always fresh online), cache fallback offline */
-var CACHE = 'umlaut-v11';
+var CACHE = 'umlaut-v13';
 var ASSETS = [
   './', 'index.html', 'css/app.css',
   'js/data/dsl.js', 'js/data/b1.js', 'js/data/b2.js', 'js/data/b1x.js', 'js/data/b2x.js',

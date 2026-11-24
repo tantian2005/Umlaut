@@ -182,6 +182,7 @@
   function footIdle() {
     var foot = root.querySelector('.lesson-foot');
     foot.className = 'lesson-foot';
+    L.partial = null;
     var auto = L.view.auto;
     var oldKeys = foot.querySelector('.foot-keys'); if (oldKeys) oldKeys.remove();
     if (L.view.insert) {
@@ -213,6 +214,7 @@
   function check() {
     if (L.answered || !L.view.ready()) return;
     var r = L.view.grade();
+    L.partial = r.partial ? r : null;
     answer(r.ok, false, r.note);
   }
 
@@ -270,11 +272,14 @@
   function showFeedback(ok, ex, note, softWrong) {
     var foot = root.querySelector('.lesson-foot');
     var fk = foot.querySelector('.foot-keys'); if (fk) fk.remove();
-    foot.className = 'lesson-foot ' + (ok ? 'ok' : 'bad');
+    var part = !ok && L.partial;
+    foot.className = 'lesson-foot ' + (ok ? 'ok' : part ? 'part' : 'bad');
     var full = fullSentence(ex);
     var speak = full && S.state.settings.tts && G.sound.canSpeak()
       ? '<button class="say" data-act="say" aria-label="' + tr('Vorlesen') + '">' + ICON.speak + '</button>' : '';
-    var head = tr(ok ? PRAISE[Math.floor(Math.random() * PRAISE.length)] : (softWrong ? 'Fast!' : 'Richtige Lösung:'));
+    var head = tr(ok ? PRAISE[Math.floor(Math.random() * PRAISE.length)] : part ? 'Teilweise richtig' : (softWrong ? 'Fast!' : 'Richtige Lösung:'));
+    if (part) { var pta = root.querySelector('.tr-input'); if (pta) { pta.classList.remove('bad'); pta.classList.add('part'); } }
+    var ovr = !ok && !softWrong && L.view.override ? '<button class="ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '';
     var ans = '';
     if (!ok && !softWrong) ans = '<p class="ans">' + esc(answerText(ex)) + speak + '</p>';
     else if (speak) ans = '<p class="ans">' + esc(full) + speak + '</p>';
@@ -287,11 +292,11 @@
       '<div class="fb" role="status">' +
         '<div class="fb-icon">' + (ok ? ICON.ok : ICON.bad) + '</div>' +
         '<div class="fb-text">' +
-          '<h3>' + head + '</h3>' + ans +
+          '<div class="fb-head"><h3>' + head + '</h3>' + ovr + '</div>' +
+          (part ? '<p class="mine">' + L.partial.diff + '</p><p class="exp sol">' + tr('Richtige Lösung:') + '</p>' : '') + ans +
           (note ? '<p class="exp">' + esc(note) + '</p>' : '') +
           (ex.e ? '<p class="exp">' + ex.e + '</p>' : '') +
           (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
-          (!ok && !softWrong && L.view.override ? '<button class="btn ghost small ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '') +
           vocab +
         '</div>' +
       '</div>' +
@@ -376,6 +381,54 @@
     return translit(String(s).toLowerCase().replace(/[„“”"'’.,!?;:()\u2013-]/g, ' ').replace(/\s+/g, ' ').trim());
   }
 
+  // ---------- translation grading: exact / typo / partial ----------
+  var DETERMINERS = /^(der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines|kein|keine|keinen|keinem|keiner|keines|(mein|dein|sein|ihr|unser|euer|eur|ihr)(e|en|em|er|es)?|dies(e|en|em|er|es))$/;
+  function lev(a, b) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) d[i] = [i];
+    for (j = 0; j <= n; j++) d[0][j] = j;
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+      {
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    return d[m][n];
+  }
+  function toks(s) { return normSentence(s).split(' ').filter(Boolean); }
+  function gradeTranslation(value, accepted) {
+    var u = toks(value), best = null;
+    for (var k = 0; k < accepted.length; k++) {
+      var a = toks(accepted[k]);
+      if (a.join(' ') === u.join(' ')) return { ok: true };
+      var r = { a: a, src: accepted[k], score: 0 };
+      if (a.length === u.length) {
+        var typos = [], forms = [], other = [];
+        for (var i = 0; i < a.length; i++) {
+          if (a[i] === u[i]) continue;
+          var dist = lev(a[i], u[i]);
+          // ending-only differences (eine/einen, gute/guten) are grammar, not spelling
+          var sameStem = a[i].slice(0, -2) === u[i].slice(0, -2) || a[i].indexOf(u[i]) === 0 || u[i].indexOf(a[i]) === 0;
+          if (DETERMINERS.test(a[i]) && DETERMINERS.test(u[i])) forms.push(i);
+          else if (dist <= (a[i].length > 6 ? 2 : 1) && !sameStem) typos.push(i);
+          else if (sameStem) forms.push(i);
+          else other.push(i);
+        }
+        r.score = a.length - typos.length * 0.2 - forms.length - other.length * 1.5;
+        r.kind = (!forms.length && !other.length) ? 'typo' : (!other.length ? 'form' : 'words');
+        r.mark = typos.concat(forms, other);
+      } else r.score = -99;
+      if (u.slice().sort().join(' ') === a.slice().sort().join(' ')) { r.kind = 'order'; r.score = a.length - 0.5; r.mark = []; }
+      if (!best || r.score > best.score) best = r;
+    }
+    if (!best || !best.kind || best.kind === 'words' && best.mark.length > Math.ceil(best.a.length / 3)) return { ok: false };
+    var raw = String(value).trim().split(/\s+/).map(function (w) { return w.replace(/^[„“"'(]+|[.,!?;:“”"')]+$/g, ''); }).filter(Boolean);
+    if (raw.length !== u.length) raw = u;
+    var shown = raw.map(function (w, i) { return best.mark && best.mark.indexOf(i) >= 0 ? '<mark>' + esc(w) + '</mark>' : esc(w); }).join(' ');
+    if (best.kind === 'typo') return { ok: true, note: tr('Schreibweise: {a}', { a: best.src }) };
+    var NOTE = { form: 'Fast richtig: Artikel oder Endung prüfen.', order: 'Alle Wörter stimmen, nur die Wortstellung nicht.', words: 'Teilweise richtig.' };
+    return { ok: false, partial: true, note: tr(NOTE[best.kind]), diff: shown };
+  }
+
   function viewTranslate(wrap, head, ex) {
     wrap.innerHTML = head +
       '<textarea class="tr-input" lang="de" rows="3" aria-label="' + tr('Deine Übersetzung') + '" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done"></textarea>' +
@@ -401,10 +454,7 @@
       el: wrap, insert: insert, override: true,
       focus: function () { if (window.matchMedia('(hover: hover)').matches) ta.focus({ preventScroll: true }); },
       ready: function () { return ta.value.trim().length > 0; },
-      grade: function () {
-        var v = normSentence(ta.value);
-        return { ok: accepted.some(function (a) { return normSentence(a) === v; }) };
-      },
+      grade: function () { return gradeTranslation(ta.value, accepted); },
       reveal: function (ok) { ta.readOnly = true; ta.classList.add(ok ? 'ok' : 'bad'); },
       key: function () { return false; }
     };
@@ -548,12 +598,20 @@
         var x0 = e.clientX, y0 = e.clientY, drag = null;
         function move(ev) {
           if (!drag) {
-            if (Math.abs(ev.clientX - x0) + Math.abs(ev.clientY - y0) < 8) return;
+            if (Math.abs(ev.clientX - x0) + Math.abs(ev.clientY - y0) < 6) return;
             drag = startDrag(el, ev);
+            try { el.releasePointerCapture && el.releasePointerCapture(ev.pointerId); } catch (e2) {}
           }
           ev.preventDefault();
-          drag.ghost.style.transform = 'translate(' + (ev.clientX - drag.dx) + 'px,' + (ev.clientY - drag.dy) + 'px) rotate(-2deg) scale(1.06)';
-          placeSlot(drag, ev.clientX, ev.clientY);
+          drag.px = ev.clientX; drag.py = ev.clientY;
+          if (!drag.raf) drag.raf = requestAnimationFrame(function () {
+            drag.raf = 0;
+            drag.ghost.style.transform = 'translate3d(' + (drag.px - drag.dx) + 'px,' + (drag.py - drag.dy) + 'px,0) scale(1.06)';
+            if (Math.abs(drag.px - (drag.lx || 0)) + Math.abs(drag.py - (drag.ly || 0)) > 6) {
+              drag.lx = drag.px; drag.ly = drag.py;
+              placeSlot(drag, drag.px, drag.py);
+            }
+          });
         }
         function up(ev) {
           document.removeEventListener('pointermove', move);
@@ -565,6 +623,8 @@
             placeSlot(drag, ev.clientX, ev.clientY);
           }
           if (!drag) return;
+          if (drag.raf) { cancelAnimationFrame(drag.raf); drag.raf = 0; }
+          if (ev.type === 'pointerup') placeSlot(drag, ev.clientX, ev.clientY);
           justDragged = true;
           setTimeout(function () { justDragged = false; }, 400);
           finishDrag(drag, k, fromPos, ev.type !== 'pointercancel');
@@ -825,6 +885,6 @@
     start: start,
     get active() { return !!L; },
     pickForUnit: pickForUnit,
-    _norm: norm
+    _norm: norm, _gradeTr: gradeTranslation
   };
 })();
