@@ -718,11 +718,17 @@
   }
   function refresh() { route(); }
 
+  // browser / Android bars follow the effective theme
+  var darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
   function applyTheme() {
     var t = S.state.settings.theme;
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
+    var dark = t === 'dark' || (t !== 'light' && darkMQ.matches);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', dark ? '#12141a' : '#f6f7fb');
   }
+  if (darkMQ.addEventListener) darkMQ.addEventListener('change', applyTheme);
 
   // back to the learning path, scrolled to the current unit
   function home() {

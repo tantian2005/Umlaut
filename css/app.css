@@ -926,3 +926,13 @@ html { background: var(--bg); }
 .ltabs button { white-space: nowrap; font-size: 14px; padding-left: 2px; padding-right: 2px; }
 .ltabs button small { font-size: 10px; }
 @media (max-width: 380px) { .ltabs button small { display: none; } }
+
+/* ============ v8: iOS status bar strip (home-screen app, black-translucent) ============ */
+/* iOS draws white status-bar text here, so light mode gets a dark navy strip; dark mode matches the page. */
+:root { --statusbar: #232a48; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --statusbar: var(--bg); } }
+:root[data-theme="dark"] { --statusbar: var(--bg); }
+.statusbar-bg {
+  position: fixed; left: 0; right: 0; top: 0; height: env(safe-area-inset-top, 0px);
+  background: var(--statusbar); z-index: 55; pointer-events: none;
+}
