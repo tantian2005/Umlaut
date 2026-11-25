@@ -579,7 +579,7 @@ button.row:hover { border-color: var(--line-strong); }
 }
 .tile:active { transform: translateY(3px); box-shadow: none; }
 .tile.ghost { background: var(--surface-2); color: transparent; box-shadow: none; border-color: var(--surface-2); pointer-events: none; }
-.build .tile { animation: tilein .16s; }
+.build .tile.enter { animation: tilein .16s; }
 @keyframes tilein { from { transform: scale(.85); opacity: .4; } }
 .build.ok .tile { border-color: var(--ok); color: var(--ok-deep); }
 .build.bad .tile { border-color: var(--bad); }
@@ -730,6 +730,7 @@ button, a, .tile, .opt { touch-action: manipulation; }
 }
 .tile-drag {
   position: fixed; left: 0; top: 0; z-index: 100; margin: 0; pointer-events: none;
+  transition: none !important; animation: none !important;
   border-color: var(--primary); box-shadow: 0 10px 24px rgb(20 30 60 / .22);
   will-change: transform;
 }
@@ -910,10 +911,10 @@ html { background: var(--bg); }
 @media (max-width: 380px) { .ltabs button small { display: none; } }
 
 /* ============ v8: iOS status bar strip (home-screen app, black-translucent) ============ */
-/* iOS draws white status-bar text here, so light mode gets a dark navy strip; dark mode matches the page. */
-:root { --statusbar: #232a48; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --statusbar: var(--bg); } }
-:root[data-theme="dark"] { --statusbar: var(--bg); }
+/* Same approach as Fernweh: the area under the status bar, the page background, theme-color and
+   color-scheme always agree, so iOS picks dark digits on light and light digits on dark. */
+:root { --statusbar: var(--bg); }
+html { background: var(--bg); }
 .statusbar-bg {
   position: fixed; left: 0; right: 0; top: 0; height: env(safe-area-inset-top, 0px);
   background: var(--statusbar); z-index: 55; pointer-events: none;
@@ -987,3 +988,15 @@ label.sw-row .switch input { pointer-events: none; }
 .tr-input.part { border-color: var(--gold); background: var(--gold-soft); }
 html.sheet-open { overscroll-behavior: none; }
 html { scrollbar-gutter: stable; }
+
+/* drag: the placeholder and the pressed source never animate or shift */
+.build .tile.slot, .build .tile.placeholder { animation: none; }
+.tile.placeholder:active, .tile.slot:active, .tile.dragging:active { transform: none; }
+.build { position: relative; } /* tiles measure offsetLeft/Top against the sentence area while dragging */
+/* why the other options are wrong */
+.fb-text .why { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.fb-text .why li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: baseline; padding: 6px 10px; border-radius: 10px; background: color-mix(in srgb, var(--surface) 70%, transparent); font-size: 14px; color: var(--ink-2); }
+.fb-text .why li b { color: var(--bad-deep); text-decoration: line-through; text-decoration-thickness: 1.5px; text-decoration-color: color-mix(in srgb, var(--bad) 60%, transparent); }
+.fb-text .why li.picked { outline: 2px solid color-mix(in srgb, var(--bad) 45%, transparent); outline-offset: -2px; }
+.backup-row > span small { display: block; font-weight: 600; font-size: 12px; color: var(--ink-3); margin-top: 2px; word-break: break-all; }
+.backup-row + .btn-row { margin-top: 10px; }

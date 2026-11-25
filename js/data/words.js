@@ -41,7 +41,7 @@ das Büro|办公室|B1|n|
 die Aufgabe|任务|B1|n|
 der Fehler|错误|B1|n|
 die Daten|数据|B2|n|
-die Studierenden|大学生们|C1|x|Studierende,Studierenden
+die Studierenden|大学生们|B2|x|Studierende,Studierenden
 der Bericht|报告|B2|n|
 das Thema|话题、题目|B1|n|Themen
 das Studium|大学学习|B1|n|Studiums
@@ -72,8 +72,8 @@ das Gesetz|法律|B2|n|
 die Kritik|批评|B2|n|
 der Vorschlag|建议|B2|n|Vorschläge
 der Autor|作者|B2|n|Autorin
-die Theorie|理论|C1|n|
-die Grafik|图表|C1|n|
+die Theorie|理论|B2|n|
+die Grafik|图表|B2|n|
 die Bewerbung|求职申请|B1|n|
 die Verspätung|晚点、延误|B1|n|
 die Reise|旅行|B1|n|
@@ -88,13 +88,13 @@ die Ankunft|到达|B1|n|
 die Verbesserung|改善|B2|n|
 die Umwelt|环境|B1|n|
 die Abnahme|减少|C1|n|
-der Anstieg|上升|C1|n|Anstiegs
+der Anstieg|上升|B2|n|Anstiegs
 die Zeitung|报纸|B1|n|
 der Patient|病人|B1|n|Patienten,Patientin
 die Ursache|原因|B2|n|Ursachen
 die Entwicklung|发展|B2|n|
 der Teilnehmer|参加者|B1|n|
-der Anteil|比例、份额|C1|n|
+der Anteil|比例、份额|B2|n|
 die Erfahrung|经验|B1|n|
 die Heizung|暖气|B1|n|
 der Müll|垃圾|B1|n|
@@ -108,14 +108,14 @@ die Antwort|回答|B1|n|
 die Meinung|观点|B1|n|
 der Streik|罢工|B2|n|Streiks
 das Unternehmen|企业|B2|n|
-der Forscher|研究者|C1|n|Forscherin
+der Forscher|研究者|B2|n|Forscherin
 der Fahrer|司机|B1|n|
-die Hausarbeit|（大学）论文作业|C1|n|Hausarbeiten
+die Hausarbeit|（大学）论文作业|B2|n|Hausarbeiten
 die Familie|家庭|B1|n|
 die Energie|能源|B2|n|
 der Schutz|保护|B2|n|
-das Wachstum|增长|C1|n|
-die Zunahme|增加|C1|n|
+das Wachstum|增长|B2|n|
+die Zunahme|增加|B2|n|
 die Nachricht|消息|B1|n|
 das Gespräch|谈话|B1|n|
 die Rücksicht|体谅、顾及|B2|n|
@@ -133,17 +133,17 @@ der Grund|原因|B1|n|Gründe
 der Klimawandel|气候变化|B2|n|Klimawandels
 die Untersuchung|调查、检查|B2|n|
 die Arbeitslosigkeit|失业|B2|n|
-die Förderung|资助、促进|C1|n|
-die Arbeitslosenquote|失业率|C1|n|
-das Konzept|方案、概念|C1|n|
+die Förderung|资助、促进|B2|n|
+die Arbeitslosenquote|失业率|B2|n|
+das Konzept|方案、概念|B2|n|
 die Umfrage|问卷调查|B2|n|
 die Armut|贫困|B2|n|
-der Rückgang|下降、减少|C1|n|
+der Rückgang|下降、减少|B2|n|
 die Vorschrift|规定|B2|n|Vorschriften
 die Wirtschaft|经济|B2|n|
-die Fachkraft|专业人才|C1|n|Fachkräfte,Fachkräften
+die Fachkraft|专业人才|B2|n|Fachkräfte,Fachkräften
 die Bildung|教育|B2|n|
-die Reform|改革|C1|n|Reformen
+die Reform|改革|B2|n|Reformen
 der Verkehr|交通|B1|n|Verkehrs
 die Adresse|地址|B1|n|
 die Autobahn|高速公路|B1|n|
@@ -179,7 +179,7 @@ die Zufriedenheit|满意|B2|n|
 der Verlust|损失|B2|n|Verluste
 die Bearbeitung|处理|B2|n|
 die Luftqualität|空气质量|B2|n|
-die Unterzeichnung|签署|C1|n|
+die Unterzeichnung|签署|B2|n|
 der Ausweis|证件|B1|n|
 der Verbrauch|消耗|B2|n|
 der Politiker|政治家|B2|n|
@@ -192,10 +192,10 @@ der Vortrag|讲座、报告|B2|n|
 die Note|分数|B1|n|Noten
 die Anfrage|询问|B2|n|
 die Lieferung|供货、送货|B2|n|
-die Überschwemmung|洪水|C1|n|Überschwemmungen
+die Überschwemmung|洪水|B2|n|Überschwemmungen
 die Warnung|警告|B2|n|Warnungen
 das Gebäude|建筑|B2|n|
-das Jubiläum|周年纪念|C1|n|Jubiläums
+das Jubiläum|周年纪念|B2|n|Jubiläums
 die Vokabel|单词|B1|n|Vokabeln
 die Verfügung|支配|B2|n|
 die Möglichkeit|可能性|B1|n|Möglichkeiten
@@ -222,18 +222,18 @@ die Sorge|担忧|B1|n|Sorgen
 die Baustelle|工地|B2|n|
 die Wahrheit|真相|B2|n|
 die Hausaufgabe|家庭作业|B1|n|Hausaufgaben
-die Senkung|降低|C1|n|
+die Senkung|降低|B2|n|
 die Sicherung|保障|C1|n|
-die Veröffentlichung|发表|C1|n|
+die Veröffentlichung|发表|B2|n|
 der Kandidat|候选人|B2|n|Kandidaten
 die Bevölkerung|人口、居民|B2|n|
 die Technologie|技术|B2|n|Technologien
 die Forschung|研究|B2|n|
 der Staat|国家|B2|n|
 die Leistung|成绩、业绩|B2|n|
-der Energiepreis|能源价格|C1|n|Energiepreise
+der Energiepreis|能源价格|B2|n|Energiepreise
 die Schwierigkeit|困难|B2|n|Schwierigkeiten
-der Beschluss|决议|C1|n|
+der Beschluss|决议|B2|n|
 die Vorlesung|大课、讲座|B2|n|
 der Konflikt|冲突|B2|n|
 der Artikel|文章|B2|n|
@@ -241,13 +241,13 @@ die Tabelle|表格|B2|n|
 der Wert|数值；价值|B2|n|Werte
 die Gebühr|费用|B2|n|Gebühren
 der Parkplatz|停车位|B1|n|Parkplätze
-der Trend|趋势|C1|n|
+der Trend|趋势|B2|n|
 die Regel|规则|B1|n|Regeln
-der Vorrat|储备|C1|n|
+der Vorrat|储备|B2|n|
 die Ausnahme|例外|B2|n|
 der/die Jugendliche|青少年|B2|x|Jugendliche,Jugendlichen
-die Quelle|来源|C1|n|Quellen
-die Angabe|说明、数据|C1|n|Angaben
+die Quelle|来源|B2|n|Quellen
+die Angabe|说明、数据|B2|n|Angaben
 die Ahnung|预感、概念|B1|n|
 das Gerät|设备|B1|n|
 die Situation|情况|B1|n|
@@ -258,7 +258,7 @@ der Prozentpunkt|百分点|C1|n|Prozentpunkte
 das Drittel|三分之一|B2|n|
 der Fahrgast|乘客|B2|n|Fahrgäste
 die Geburt|出生|B2|n|Geburten
-der Energieverbrauch|能源消耗|C1|n|Energieverbrauchs
+der Energieverbrauch|能源消耗|B2|n|Energieverbrauchs
 der Vergleich|比较|B2|n|
 das Verkehrsmittel|交通工具|B1|n|
 die Hälfte|一半|B1|n|
@@ -266,48 +266,48 @@ das Viertel|四分之一|B1|n|
 die Ausgabe|支出|B2|n|Ausgaben
 der Einwohner|居民|B1|n|
 die Verdopplung|翻倍|C1|n|
-die Regelung|规定|C1|n|
-der Beweis|证据|C1|n|Beweisen
+die Regelung|规定|B2|n|
+der Beweis|证据|B2|n|Beweisen
 die Universität|大学|B1|n|
 die Stellungnahme|表态、意见|C1|n|
-der Rahmen|框架|C1|n|
-der Fragebogen|问卷|C1|n|Fragebogens
-die Mehrwertsteuer|增值税|C1|n|
+der Rahmen|框架|B2|n|
+der Fragebogen|问卷|B2|n|Fragebogens
+die Mehrwertsteuer|增值税|B2|n|
 der Mieter|租客|B1|n|
-die Lehre|教学；学徒|C1|n|
-der Auftrag|委托、任务|C1|n|
-der Prozess|诉讼；过程|C1|n|
+die Lehre|教学；学徒|B2|n|
+der Auftrag|委托、任务|B2|n|
+der Prozess|诉讼；过程|B2|n|
 der Anwalt|律师|B2|n|Anwalts
 der Tourismus|旅游业|B2|n|
 die Annahme|假设|C1|n|Annahmen
 das Team|团队|B1|n|
-der Bedarf|需求|C1|n|
-der Zusammenhang|关联|C1|n|
+der Bedarf|需求|B2|n|
+der Zusammenhang|关联|B2|n|
 das Einkommen|收入|B2|n|
 die Industrie|工业|B2|n|
 der Einfluss|影响|B2|n|
-die Mediennutzung|媒体使用|C1|n|
-der Schlafmangel|睡眠不足|C1|n|
+die Mediennutzung|媒体使用|B2|n|
+der Schlafmangel|睡眠不足|B2|n|
 die Konzentration|注意力|B2|n|
 die Ausbildung|职业培训|B1|n|
-die Voraussetzung|前提|C1|n|
-der Mangel|缺乏|C1|n|
+die Voraussetzung|前提|B2|n|
+der Mangel|缺乏|B2|n|
 der Schaden|损害|B2|n|
 der Ansatz|方法、思路|C1|n|Ansätze
 das Internet|互联网|B1|n|
 das Klima|气候|B2|n|
-das Argument|论据|C1|n|Argumente
+das Argument|论据|B2|n|Argumente
 die Stichprobe|样本|C1|n|
 der Vorteil|优点|B1|n|Vorteile
-der Umsatz|营业额|C1|n|
+der Umsatz|营业额|B2|n|
 die Schwäche|弱点|B2|n|Schwächen
-die Einleitung|引言|C1|n|
+die Einleitung|引言|B2|n|
 der Täter|作案者|B2|n|
 der Sprecher|发言人|B2|n|
 der Schirm|雨伞|B1|n|
 der Ausflug|郊游|B1|n|
-der Angeklagte|被告|C1|x|Angeklagte
-die Befragten|受访者|C1|x|Befragten
+der Angeklagte|被告|B2|x|Angeklagte
+die Befragten|受访者|B2|x|Befragten
 die Altstadt|老城|B1|n|
 das Ziel|目标|B1|n|
 der Plan|计划|B1|n|Pläne
@@ -341,17 +341,17 @@ steigen|上升|B1|v|stieg,stiegen,gestiegen,gestiegenen
 sinken|下降|B2|v|sank,gesunken
 zu·nehmen|增加|B2|v|nimmt,nahm,zugenommen
 ab·nehmen|减少|B2|v|nimmt,nahm,abgenommen
-zurück·gehen|下降|C1|v|ging,zurückgegangen
+zurück·gehen|下降|B2|v|ging,zurückgegangen
 wachsen|增长|B2|v|wächst,wuchs,gewachsen
-sich verdoppeln|翻倍|C1|v|verdoppelt
-bei·tragen|有助于|C1|v|trägt,trug,beigetragen
+sich verdoppeln|翻倍|B2|v|verdoppelt
+bei·tragen|有助于|B2|v|trägt,trug,beigetragen
 beruhen|基于|C1|v|
 sich auswirken|影响|C1|v|wirkt
 sich befassen|研究、探讨|C1|v|befasst
 sich auseinander·setzen|探讨、钻研|C1|v|setzt,auseinandergesetzt
 hin·weisen|指出|C1|v|weisen,wies,hingewiesen
 behaupten|声称|B2|v|
-betonen|强调|C1|v|
+betonen|强调|B2|v|
 ein·räumen|承认|C1|v|räumte
 bezweifeln|怀疑|C1|v|
 fordern|要求|B2|v|
@@ -360,8 +360,8 @@ ergreifen|采取|C1|v|ergriffen
 verbessern|改善|B2|v|
 erkennen|认出、认识到|B2|v|erkannt
 reduzieren|减少|B2|v|
-investieren|投资|C1|v|
-analysieren|分析|C1|v|
+investieren|投资|B2|v|
+analysieren|分析|B2|v|
 verschieben|推迟|B2|v|verschoben
 ab·sagen|取消|B1|v|abgesagt
 teil·nehmen|参加|B1|v|nimmt,nahm,teilgenommen
@@ -428,27 +428,57 @@ dankbar|感激的|B2|a|
 enttäuscht|失望的|B2|a|
 bekannt|著名的|B1|a|
 deutlich|明显的|B2|a|
-eindeutig|明确的|C1|a|
+eindeutig|明确的|B2|a|
 aktuell|当前的|B2|a|
 ernst|严肃的|B2|a|
 streng|严格的|B2|a|
 öffentlich|公共的|B2|a|
-wirksam|有效的|C1|a|
-komplex|复杂的|C1|a|
-vorläufig|暂时的|C1|a|
-veraltet|过时的|C1|a|
+wirksam|有效的|B2|a|
+komplex|复杂的|B2|a|
+vorläufig|暂时的|B2|a|
+veraltet|过时的|B2|a|
 sinnvoll|有意义的|B2|a|
 wünschenswert|值得期待的|C1|a|
-lösbar|可解决的|C1|a|
+lösbar|可解决的|B2|a|
 vorhersehbar|可预见的|C1|a|
 hoffnungslos|无望的|B2|a|
 sehenswert|值得一看的|B2|a|
-konstant|恒定的|C1|a|
-stabil|稳定的|C1|a|
+konstant|恒定的|B2|a|
+stabil|稳定的|B2|a|
 flexibel|灵活的|B2|a|flexible,flexiblen,flexibler
 schädlich|有害的|B2|a|
 gebraucht|二手的|B1|a|
 vegetarisch|素食的|B1|a|
 finanziell|财务上的|B2|a|
 arbeitslos|失业的|B1|a|
+die Rahmenbedingungen|框架条件|C1|x|Rahmenbedingungen
+die Chancengleichheit|机会均等|C1|n|
+die Zulassung|录取；准入|C1|n|
+die Fördermittel|资助经费|C1|x|Fördermittel
+die Anschaffung|购置|C1|n|
+die Infrastruktur|基础设施|C1|n|
+die Lebenshaltungskosten|生活开支|C1|x|Lebenshaltungskosten
+die Darstellung|陈述、说法|C1|n|
+die Finanzierung|资金筹措|C1|n|
+der Studienabbruch|中途退学|C1|n|Studienabbrüche
+die Befragung|问卷调查|C1|n|
+die Prüfungsordnung|考试条例|C1|n|
+aussagekräftig|有说服力的|C1|a|
+reibungslos|顺利的|C1|a|
+fristgerecht|按期的|C1|a|
+grundlegend|根本的|C1|a|
+schwerwiegend|严重的|C1|a|
+bedingt|有限地、有条件地|C1|a|
+voraussichtlich|预计|C1|a|
+nahezu|几乎|C1|x|nahezu
+inwieweit|在多大程度上|C1|x|inwieweit
+schrittweise|逐步的|C1|a|
+ein·schränken|限制|C1|v|einzuschränken,eingeschränkt
+um·setzen|实施|C1|v|umzusetzen,umgesetzt
+aus·werten|分析评估|C1|v|ausgewertet
+an·dauern|持续|C1|v|andauern,andauernden
+erläutern|阐明|C1|v|erläutert
+subventionieren|补贴|C1|v|subventioniert
+anonymisieren|匿名化|C1|v|anonymisiert
+sich verständigen|达成一致|C1|v|verständigt
 `;

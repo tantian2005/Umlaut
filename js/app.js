@@ -645,6 +645,7 @@
         '<div class="setting"><span>' + t('Design') + '</span>' + seg('theme', [['auto', t('Auto')], ['light', t('Hell')], ['dark', t('Dunkel')]], s.theme) + '</div>' +
       '</div>' +
       '<h2 class="section-title">' + t('Daten') + ' <button class="info" data-tip="' + t('Fortschritt wird nur in diesem Browser gespeichert. Mit Export/Import auf ein anderes Gerät übertragen.') + '" aria-label="' + t('Info: Fortschritt wird nur in diesem Browser gespeichert') + '">i</button></h2>' +
+      backupRow() +
       '<div class="btn-row">' +
         '<button class="btn ghost small" data-act="export">' + t('Exportieren') + '</button>' +
         '<button class="btn ghost small" data-act="import">' + t('Importieren') + '</button>' +
@@ -690,6 +691,12 @@
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
     };
+    var bk = view.querySelector('[data-backup]');
+    if (bk) bk.onclick = function () {
+      var a = bk.dataset.backup, B = G.backup;
+      (a === 'choose' ? B.choose() : a === 'resume' ? B.resume() : (B.stop(), Promise.resolve(true)))
+        .then(function (ok) { if (ok && a !== 'stop') toast(t('Gesichert')); refresh(); });
+    };
     var file = view.querySelector('[data-file]');
     view.querySelector('[data-act="import"]').onclick = function () { file.click(); };
     file.onchange = function () {
@@ -708,6 +715,21 @@
       confirmDlg({ title: t('Alles zurücksetzen?'), text: t('XP, Serie und Lernfortschritt werden unwiderruflich gelöscht.'), ok: t('Löschen'), danger: true })
         .then(function (yes) { if (yes) { S.reset(); refresh(); toast(t('Zurückgesetzt')); } });
     };
+  }
+
+  function backupRow() {
+    var B = G.backup;
+    if (!B || !B.supported) return '';
+    var st = B.status(), act, label, sub = '';
+    if (!st.on) { act = 'choose'; label = t('Datei wählen'); }
+    else if (st.perm !== 'granted') { act = 'resume'; label = t('Fortsetzen'); sub = st.name || ''; }
+    else {
+      act = 'stop'; label = t('Aus');
+      var d = st.last ? new Date(st.last) : null;
+      sub = (st.name || '') + (d ? ' · ' + (S.dayKey(d) === S.dayKey() ? '' : d.toLocaleDateString() + ' ') + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '');
+    }
+    return '<div class="setting backup-row"><span>' + t('Automatische Sicherung') + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' +
+      '<button class="btn ghost small" data-backup="' + act + '">' + label + '</button></div>';
   }
 
   // ---------- router ----------
@@ -739,6 +761,7 @@
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     else document.documentElement.removeAttribute('data-theme');
     var dark = t === 'dark' || (t !== 'light' && darkMQ.matches);
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
     var old = document.querySelector('meta[name="theme-color"]');
     var meta = document.createElement('meta');
     meta.name = 'theme-color';
@@ -754,6 +777,7 @@
     else { refresh(); window.scrollTo(0, 0); }
   }
   G.app = { refresh: refresh, toast: toast, home: home };
+  if (G.backup) G.backup.onChange(function () { if (/settings/.test(location.hash)) refresh(); });
   document.addEventListener('touchstart', function () {}, { passive: true });
   document.addEventListener('contextmenu', function (e) {
     if (e.target.closest && e.target.closest('button, a, .tile, .opt, .node, img, .nav-link')) e.preventDefault();
