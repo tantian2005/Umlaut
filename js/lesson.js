@@ -131,7 +131,12 @@
       if (Math.abs(h - lastH) > 2) { root.style.height = h ? h + 'px' : ''; lastH = h; }
       if (top !== lastTop) { root.style.top = top ? top + 'px' : ''; lastTop = top; }
       root.classList.toggle('kb', kb);
-      if (kb) keepFocusVisible();
+      if (kb) {
+        // close any gap between the lesson's bottom edge and the keyboard (iOS can report them inconsistently)
+        var gap = Math.round(vv.offsetTop + vv.height - root.getBoundingClientRect().bottom);
+        if (Math.abs(gap) > 2) { lastH = Math.max(200, lastH + gap); root.style.height = lastH + 'px'; }
+        keepFocusVisible();
+      }
     });
   }
   // if the focused field ended up under the keyboard, move the lesson body (not the page) just enough
@@ -300,8 +305,10 @@
     if (part) { var pta = root.querySelector('.tr-input'); if (pta) { pta.classList.remove('bad'); pta.classList.add('part'); } }
     var ovr = !ok && !softWrong && L.view.override ? '<button class="ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '';
     var ans = '';
-    if (!ok && !softWrong) ans = '<p class="ans">' + esc(answerText(ex)) + speak + '</p>';
-    else if (speak) ans = '<p class="ans">' + esc(full) + speak + '</p>';
+    if (!ok && !softWrong && ex.t === 'm') { head = tr('Fast!'); ans = briefOf(ex) ? '<p class="exp brief">' + briefOf(ex) + '</p>' : ''; }
+    else if (!ok && !softWrong) ans = '<p class="ans">' + esc(answerText(ex)) + speak + '</p>';
+    // correct: no need to repeat the sentence (it is in the explanation sheet) — just the short reason
+    else if (ok && briefOf(ex) && !note) ans = '<p class="exp brief">' + briefOf(ex) + '</p>';
     var words = G.vocab ? G.vocab.of(L.cur.id) : [];
     if (words.length) S.markWords(words.map(function (w) { return w.id; }));
     // like Duolingo: the panel stays short (result + solution); the full explanation opens on demand
@@ -335,23 +342,31 @@
     if (S.state.settings.tts && S.state.settings.autoSpeak && full) G.sound.speak(full);
   }
 
-  var ICON_BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 5.5V20c-2.5-1.5-5.5-1.5-8 0zm16 0C17.5 4 14.5 4 12 5.5V20c2.5-1.5 5.5-1.5 8 0z"/></svg>';
+  var ICON_BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 5.8C6.2 4.4 9.3 4.4 12 6v13.5c-2.7-1.6-5.8-1.6-8.5-.2zM20.5 5.8C17.8 4.4 14.7 4.4 12 6v13.5c2.7-1.6 5.8-1.6 8.5-.2z"/></svg>';
   var ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>';
+
+  // short line for the result panel / detailed note for the explanation sheet
+  function matchNote(ex) { return ex.t === 'm' && G.MATCH_NOTES && G.MATCH_NOTES[(ex.p || '') + '|' + ex.pairs[0][0]]; }
+  function briefOf(ex) { var m = matchNote(ex); return ex.e || (m ? m[0] : ''); }
+  function detailOf(ex) { var m = matchNote(ex); return (m ? m[1] : '') || ex.e || ''; }
 
   // explanation sheet: grammar note, Chinese meaning, why each wrong option is wrong, words
   function explainHTML(ex, words, full) {
-    var why = whyList(ex);
+    var why = whyList(ex), detail = detailOf(ex);
+    var pairs = ex.t === 'm' ? '<div class="pairs">' + ex.pairs.map(function (p) {
+      return '<div><b lang="de">' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>';
+    }).join('') + '</div>' : '';
     var vocab = words.length ? '<div class="vocab">' + words.map(function (w) {
       return '<button class="wchip" data-w="' + esc(w.de) + '"><b lang="de">' + esc(w.de) + '</b><span>' + esc(w.zh) + '</span></button>';
     }).join('') + '</div>' : '';
-    if (!ex.e && !why && !vocab) return '';
+    if (!detail && !why && !vocab && !pairs) return '';
     var speak = full && S.state.settings.tts && G.sound.canSpeak()
       ? '<button class="say" data-act="say" aria-label="' + tr('Vorlesen') + '">' + ICON.speak + '</button>' : '';
     return '<div class="sheet-head"><h2>' + tr('Erklärung') + '</h2><button class="icon-btn" data-close aria-label="' + tr('Schließen') + '">' + ICON_X + '</button></div>' +
       '<div class="explain">' +
         (full ? '<p class="ex-sent" lang="de">' + esc(full) + speak + '</p>' : '') +
         (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
-        (ex.e ? '<p class="exp">' + ex.e + '</p>' : '') +
+        (detail ? '<p class="exp">' + detail + '</p>' : '') + pairs +
         (why ? '<h3>' + tr('Andere Optionen') + '</h3>' + why : '') +
         (vocab ? '<h3>' + tr('Wörter') + '</h3>' + vocab : '') +
       '</div>';

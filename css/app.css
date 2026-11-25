@@ -1009,7 +1009,8 @@ html { scrollbar-gutter: stable; }
 .ok .why-btn { color: var(--ok-deep); }
 .bad .why-btn { color: var(--bad-deep); }
 .part .why-btn { color: var(--gold-deep); }
-.why-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.why-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; }
+.fb-text .exp.brief { margin-top: 2px; }
 .why-btn:active { transform: scale(.94); }
 .fb-head { align-items: center; }
 .fb-head .ovr { margin-top: 0; }
@@ -1022,3 +1023,20 @@ html { scrollbar-gutter: stable; }
 .explain .why { margin: 0; }
 .explain .why li { background: var(--surface-2); }
 .explain .vocab { margin: 0; }
+/* keyboard open (phone): give the sentence the room — no top bar, umlauts and the check button share one row */
+@media (max-width: 700px) {
+  .lesson.kb { grid-template-rows: 0 1fr auto; }
+  .lesson.kb .lesson-top { visibility: hidden; height: 0; padding: 0; overflow: hidden; }
+  .lesson.kb .lesson-body { padding-top: calc(10px + var(--st)); }
+  .lesson.kb .lesson-foot { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+  .lesson.kb .foot-keys { flex: 1 1 auto; min-width: 0; margin: 0; justify-content: flex-start; gap: 4px; }
+  .lesson.kb .foot-keys button { flex: 0 0 34px; height: 40px; font-size: 17px; border-radius: 9px; }
+  .lesson.kb .foot-in { flex: none; margin: 0; }
+  .lesson.kb .foot-in .skip { display: none; }
+  .lesson.kb .foot-in .btn { min-width: 0; padding: 0 16px; height: 44px; }
+}
+/* matching exercise: all pairs in the explanation sheet */
+.explain .pairs { display: flex; flex-direction: column; gap: 6px; }
+.explain .pairs div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 7px 12px; border-radius: 10px; background: var(--surface-2); font-size: 14px; }
+.explain .pairs b { color: var(--ink); }
+.explain .pairs span { color: var(--ink-2); }
