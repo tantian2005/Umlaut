@@ -117,13 +117,30 @@
   }
 
   // iOS: keep the footer above the on-screen keyboard
+  // keep the lesson exactly inside the visible area while the on-screen keyboard is open.
+  // One update per frame and no layout switches, so the screen follows the keyboard instead of jumping.
+  var fitRaf = 0, lastH = 0, lastTop = 0;
   function fitViewport() {
-    var vv = window.visualViewport;
-    if (!vv || root.hidden) return;
-    var kb = window.innerHeight - vv.height > 120;
-    root.style.height = kb ? vv.height + 'px' : '';
-    root.style.top = kb ? vv.offsetTop + 'px' : '';
-    root.classList.toggle('kb', kb);
+    if (fitRaf) return;
+    fitRaf = requestAnimationFrame(function () {
+      fitRaf = 0;
+      var vv = window.visualViewport;
+      if (!vv || root.hidden) return;
+      var kb = window.innerHeight - vv.height > 120;
+      var h = kb ? Math.round(vv.height) : 0, top = kb ? Math.round(vv.offsetTop) : 0;
+      if (Math.abs(h - lastH) > 2) { root.style.height = h ? h + 'px' : ''; lastH = h; }
+      if (top !== lastTop) { root.style.top = top ? top + 'px' : ''; lastTop = top; }
+      root.classList.toggle('kb', kb);
+      if (kb) keepFocusVisible();
+    });
+  }
+  // if the focused field ended up under the keyboard, move the lesson body (not the page) just enough
+  function keepFocusVisible() {
+    var a = document.activeElement, body = root.querySelector('.lesson-body');
+    if (!a || !body || !body.contains(a) || !/INPUT|TEXTAREA/.test(a.tagName)) return;
+    var r = a.getBoundingClientRect(), b = body.getBoundingClientRect();
+    if (r.bottom > b.bottom - 8) body.scrollTop += r.bottom - b.bottom + 16;
+    else if (r.top < b.top + 8) body.scrollTop -= b.top - r.top + 16;
   }
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', fitViewport);
@@ -287,19 +304,16 @@
     else if (speak) ans = '<p class="ans">' + esc(full) + speak + '</p>';
     var words = G.vocab ? G.vocab.of(L.cur.id) : [];
     if (words.length) S.markWords(words.map(function (w) { return w.id; }));
-    var vocab = words.length ? '<div class="vocab">' + words.map(function (w) {
-      return '<button class="wchip" data-w="' + esc(w.de) + '"><b lang="de">' + esc(w.de) + '</b><span>' + esc(w.zh) + '</span></button>';
-    }).join('') + '</div>' : '';
+    // like Duolingo: the panel stays short (result + solution); the full explanation opens on demand
+    var more = explainHTML(ex, words, full);
+    var whyBtn = more ? '<button class="why-btn" data-act="why">' + ICON_BOOK + '<span>' + tr('Erklärung') + '</span></button>' : '';
     var html =
       '<div class="fb" role="status">' +
         '<div class="fb-icon">' + (ok ? ICON.ok : ICON.bad) + '</div>' +
         '<div class="fb-text">' +
-          '<div class="fb-head"><h3>' + head + '</h3>' + ovr + '</div>' +
+          '<div class="fb-head"><h3>' + head + '</h3>' + ovr + whyBtn + '</div>' +
           (part ? '<p class="mine">' + L.partial.diff + '</p><p class="exp sol">' + tr('Richtige Lösung:') + '</p>' : '') + ans +
           (note ? '<p class="exp">' + esc(note) + '</p>' : '') +
-          (ex.e ? '<p class="exp">' + ex.e + '</p>' : '') + whyList(ex) +
-          (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
-          vocab +
         '</div>' +
       '</div>' +
       '<button class="btn ' + (ok ? 'ok' : 'bad') + '" data-act="next">' + tr('Weiter') + '</button>';
@@ -308,21 +322,52 @@
     nb.onclick = next;
     var sb = foot.querySelector('[data-act="say"]');
     if (sb) sb.onclick = function () { G.sound.speak(full); };
-    foot.querySelectorAll('.wchip').forEach(function (c) { c.onclick = function () { G.sound.speak(c.dataset.w); }; });
     var ob = foot.querySelector('[data-act="ovr"]');
     if (ob) ob.onclick = function () { forgive(ex); };
+    var wb = foot.querySelector('[data-act="why"]');
+    if (wb) wb.onclick = function () {
+      var sh = G.ui.sheet(more);
+      sh.el.querySelectorAll('.wchip').forEach(function (c) { c.onclick = function () { G.sound.speak(c.dataset.w); }; });
+      var s2 = sh.el.querySelector('[data-act="say"]');
+      if (s2) s2.onclick = function () { G.sound.speak(full); };
+    };
     setTimeout(function () { nb.focus({ preventScroll: true }); }, 30);
     if (S.state.settings.tts && S.state.settings.autoSpeak && full) G.sound.speak(full);
   }
 
-  // why each wrong option is wrong (js/data/why.js, keyed by "question|correct answer")
+  var ICON_BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 5.5V20c-2.5-1.5-5.5-1.5-8 0zm16 0C17.5 4 14.5 4 12 5.5V20c2.5-1.5 5.5-1.5 8 0z"/></svg>';
+  var ICON_X = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>';
+
+  // explanation sheet: grammar note, Chinese meaning, why each wrong option is wrong, words
+  function explainHTML(ex, words, full) {
+    var why = whyList(ex);
+    var vocab = words.length ? '<div class="vocab">' + words.map(function (w) {
+      return '<button class="wchip" data-w="' + esc(w.de) + '"><b lang="de">' + esc(w.de) + '</b><span>' + esc(w.zh) + '</span></button>';
+    }).join('') + '</div>' : '';
+    if (!ex.e && !why && !vocab) return '';
+    var speak = full && S.state.settings.tts && G.sound.canSpeak()
+      ? '<button class="say" data-act="say" aria-label="' + tr('Vorlesen') + '">' + ICON.speak + '</button>' : '';
+    return '<div class="sheet-head"><h2>' + tr('Erklärung') + '</h2><button class="icon-btn" data-close aria-label="' + tr('Schließen') + '">' + ICON_X + '</button></div>' +
+      '<div class="explain">' +
+        (full ? '<p class="ex-sent" lang="de">' + esc(full) + speak + '</p>' : '') +
+        (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
+        (ex.e ? '<p class="exp">' + ex.e + '</p>' : '') +
+        (why ? '<h3>' + tr('Andere Optionen') + '</h3>' + why : '') +
+        (vocab ? '<h3>' + tr('Wörter') + '</h3>' + vocab : '') +
+      '</div>';
+  }
+
+  // why each wrong option is wrong (js/data/why.js, keyed by "question|correct answer"); the picked one first
   function whyList(ex) {
     var w = ex.t === 'c' && G.WHY && G.WHY[ex.q + '|' + ex.o[0]];
     if (!w) return '';
-    var picked = L.view.picked && L.view.picked();
-    return '<ul class="why">' + ex.o.slice(1).map(function (o, i) {
-      return w[i] ? '<li' + (o === picked ? ' class="picked"' : '') + '><b lang="de">' + esc(o) + '</b><span>' + esc(w[i]) + '</span></li>' : '';
-    }).join('') + '</ul>';
+    var picked = L.view.picked && L.view.picked(), items = [];
+    ex.o.slice(1).forEach(function (o, i) {
+      if (!w[i]) return;
+      var li = '<li' + (o === picked ? ' class="picked"' : '') + '><b lang="de">' + esc(o) + '</b><span>' + esc(w[i]) + '</span></li>';
+      if (o === picked) items.unshift(li); else items.push(li);
+    });
+    return '<ul class="why">' + items.join('') + '</ul>';
   }
 
   function answerText(ex) {
@@ -530,7 +575,6 @@
       '</div>';
     var inp = wrap.querySelector('.gap-input');
     inp.addEventListener('input', updateCheck);
-    inp.addEventListener('focus', function () { setTimeout(function () { inp.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 300); });
     inp.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (L.answered) next(); else check(); }
     });
@@ -875,6 +919,7 @@
     L = null;
     document.body.classList.remove('in-lesson');
     root.hidden = true;
+    root.style.height = root.style.top = ''; lastH = lastTop = 0; root.classList.remove('kb');
     root.innerHTML = '';
     root.style.height = ''; root.style.top = ''; root.classList.remove('kb');
     document.body.style.overflow = '';

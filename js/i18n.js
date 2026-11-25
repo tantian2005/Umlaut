@@ -27,7 +27,7 @@
     'Rekord': '最长连续', 'XP': '经验', 'Lektionen': '课时', 'Genauigkeit': '正确率', 'Lernzeit': '学习时长',
     'Diese Woche': '本周', '15 Wochen': '近 15 周', '{n} min': '{n} 分钟',
     // settings
-    'Töne': '音效', 'Vorlesen': '朗读', 'Nach jeder Antwort vorlesen': '答题后自动朗读', 'Vibration': '振动', 'Wiederholungs-Hinweis': '复习红点', 'Automatische Sicherung': '自动备份', 'Datei wählen': '选择文件', 'Fortsetzen': '继续', 'Aus': '关闭', 'Gesichert': '已备份',
+    'Töne': '音效', 'Vorlesen': '朗读', 'Nach jeder Antwort vorlesen': '答题后自动朗读', 'Vibration': '振动', 'Wiederholungs-Hinweis': '复习红点', 'Automatische Sicherung': '自动备份', 'Datei wählen': '选择文件', 'Fortsetzen': '继续', 'Aus': '关闭', 'Gesichert': '已备份', 'Andere Optionen': '其他选项', 'Erklärung': '解析', 'Warum nicht die anderen?': '其他选项为什么错',
     'Design': '外观', 'Auto': '自动', 'Hell': '浅色', 'Dunkel': '深色', 'Sprache': '界面语言',
     'Daten': '数据', 'Exportieren': '导出', 'Importieren': '导入',
     'Fortschritt wird nur in diesem Browser gespeichert. Mit Export/Import auf ein anderes Gerät übertragen.': '进度只保存在当前浏览器中。可通过导出 / 导入转移到其他设备。',
