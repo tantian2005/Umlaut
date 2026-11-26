@@ -58,6 +58,7 @@
       [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.11, 0.3, 'sine', 0.15); });
     },
     canSpeak: function () { return 'speechSynthesis' in window; },
+    stop: function () { if ('speechSynthesis' in window) speechSynthesis.cancel(); },
     speak: function (text) {
       if (!('speechSynthesis' in window) || !text) return;
       speechSynthesis.cancel();

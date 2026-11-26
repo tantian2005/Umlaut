@@ -116,28 +116,32 @@
     next();
   }
 
-  // iOS: keep the footer above the on-screen keyboard
   // keep the lesson exactly inside the visible area while the on-screen keyboard is open.
   // One update per frame and no layout switches, so the screen follows the keyboard instead of jumping.
   var fitRaf = 0, lastH = 0, lastTop = 0;
   function fitViewport() {
     if (fitRaf) return;
-    fitRaf = requestAnimationFrame(function () {
-      fitRaf = 0;
-      var vv = window.visualViewport;
-      if (!vv || root.hidden) return;
-      var kb = window.innerHeight - vv.height > 120;
-      var h = kb ? Math.round(vv.height) : 0, top = kb ? Math.round(vv.offsetTop) : 0;
-      if (Math.abs(h - lastH) > 2) { root.style.height = h ? h + 'px' : ''; lastH = h; }
-      if (top !== lastTop) { root.style.top = top ? top + 'px' : ''; lastTop = top; }
-      root.classList.toggle('kb', kb);
-      if (kb) {
-        // close any gap between the lesson's bottom edge and the keyboard (iOS can report them inconsistently)
-        var gap = Math.round(vv.offsetTop + vv.height - root.getBoundingClientRect().bottom);
-        if (Math.abs(gap) > 2) { lastH = Math.max(200, lastH + gap); root.style.height = lastH + 'px'; }
-        keepFocusVisible();
-      }
-    });
+    fitRaf = requestAnimationFrame(function () { fitRaf = 0; fitNow(); });
+  }
+  function fitNow() {
+    var vv = window.visualViewport;
+    if (!vv || root.hidden) return;
+    // newer iOS shrinks the whole page for the keyboard (then nothing is obscured), older iOS only the
+    // visual viewport. So "keyboard open" = a text field has focus on a touch device; the explicit
+    // height is only needed when part of the page is really hidden behind the keyboard.
+    var obscured = window.innerHeight - vv.height > 120;
+    var a = document.activeElement;
+    var kb = obscured || (touchUI.matches && root.contains(a) && isField(a));
+    var h = obscured ? Math.round(vv.height) : 0, top = obscured ? Math.round(vv.offsetTop) : 0;
+    if (Math.abs(h - lastH) > 2) { root.style.height = h ? h + 'px' : ''; lastH = h; }
+    if (top !== lastTop) { root.style.top = top ? top + 'px' : ''; lastTop = top; }
+    root.classList.toggle('kb', kb);
+    if (obscured) {
+      // close any gap between the lesson's bottom edge and the keyboard (iOS can report them inconsistently)
+      var gap = Math.round(vv.offsetTop + vv.height - root.getBoundingClientRect().bottom);
+      if (Math.abs(gap) > 2) { lastH = Math.max(200, lastH + gap); root.style.height = lastH + 'px'; }
+    }
+    if (kb) keepFocusVisible();
   }
   // if the focused field ended up under the keyboard, move the lesson body (not the page) just enough
   function keepFocusVisible() {
@@ -147,6 +151,11 @@
     if (r.bottom > b.bottom - 8) body.scrollTop += r.bottom - b.bottom + 16;
     else if (r.top < b.top + 8) body.scrollTop -= b.top - r.top + 16;
   }
+  var touchUI = window.matchMedia('(hover: none) and (pointer: coarse)');
+  function isField(el) { return el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && /^(text|search)?$/.test(el.type || ''))); }
+  root.addEventListener('focusin', function (e) { if (isField(e.target)) fitNow(); });
+  // tapping the ä/ö/ü keys keeps the focus; only a real blur closes the keyboard
+  root.addEventListener('focusout', function () { setTimeout(fitNow, 60); });
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', fitViewport);
     window.visualViewport.addEventListener('scroll', fitViewport);
@@ -188,6 +197,7 @@
   }
 
   function next() {
+    G.sound.stop();
     setProgress();
     var e = L.queue.shift();
     if (!e) return finish();
@@ -245,6 +255,8 @@
   function answer(ok, skipped, note) {
     if (L.answered) return;
     L.answered = true;
+    // phones: close the keyboard so the result panel gets the whole bottom of the screen
+    if (touchUI.matches && isField(document.activeElement)) document.activeElement.blur();
     var e = L.cur, info = G.itemIndex[e.id], ex = info.ex;
     var first = !L.attempted[e.id];
     L.attempted[e.id] = true;
@@ -933,6 +945,7 @@
     var goHome = !!L.finished;
     L = null;
     document.body.classList.remove('in-lesson');
+    G.sound.stop();
     root.hidden = true;
     root.style.height = root.style.top = ''; lastH = lastTop = 0; root.classList.remove('kb');
     root.innerHTML = '';
