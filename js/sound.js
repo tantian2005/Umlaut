@@ -58,14 +58,16 @@
       [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.11, 0.3, 'sine', 0.15); });
     },
     canSpeak: function () { return 'speechSynthesis' in window; },
+    // a German voice is installed (needed for dictation)
+    hasGermanVoice: function () { if (!voice) pickVoice(); return !!voice; },
     stop: function () { if ('speechSynthesis' in window) speechSynthesis.cancel(); },
-    speak: function (text) {
+    speak: function (text, rate) {
       if (!('speechSynthesis' in window) || !text) return;
       speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
       u.lang = 'de-DE';
       if (voice) u.voice = voice;
-      u.rate = 0.95;
+      u.rate = rate || 0.95;
       speechSynthesis.speak(u);
     }
   };

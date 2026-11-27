@@ -27,7 +27,7 @@
     'Rekord': '最长连续', 'XP': '经验', 'Lektionen': '课时', 'Genauigkeit': '正确率', 'Lernzeit': '学习时长',
     'Diese Woche': '本周', '15 Wochen': '近 15 周', '{n} min': '{n} 分钟',
     // settings
-    'Töne': '音效', 'Vorlesen': '朗读', 'Nach jeder Antwort vorlesen': '答题后自动朗读', 'Vibration': '振动', 'Wiederholungs-Hinweis': '复习红点', 'Automatische Sicherung': '自动备份', 'Datei wählen': '选择文件', 'Fortsetzen': '继续', 'Aus': '关闭', 'Gesichert': '已备份', 'Andere Optionen': '其他选项', 'Erklärung': '解析', 'Warum nicht die anderen?': '其他选项为什么错',
+    'Töne': '音效', 'Vorlesen': '朗读', 'Nach jeder Antwort vorlesen': '答题后自动朗读', 'Vibration': '振动', 'Wiederholungs-Hinweis': '复习红点', 'Automatische Sicherung': '自动备份', 'Datei wählen': '选择文件', 'Fortsetzen': '继续', 'Aus': '关闭', 'Gesichert': '已备份', 'Andere Optionen': '其他选项', 'Erklärung': '解析', 'Andere Wortstellung, auch richtig. Musterlösung: {a}': '语序不同，也正确。参考答案：{a}', 'Ein Wort zu viel.': '多了一个词。', 'Diktat': '听写', '{n} Sätze': '{n} 句', 'Schreib, was du hörst.': '写下你听到的句子', 'Normal': '正常', 'Langsam': '慢速', '{n} Fehler': '{n} 处拼写错误。', 'Es fehlt: {a}': '漏了：{a}。', 'Groß- und Kleinschreibung prüfen.': '注意大小写。', 'Alle Wörter stimmen, aber die Wortstellung ist falsch.': '单词都对，但语序不对。', 'Es fehlt ein Wort: {a}': '少了一个词：{a}', 'Warum nicht die anderen?': '其他选项为什么错',
     'Design': '外观', 'Auto': '自动', 'Hell': '浅色', 'Dunkel': '深色', 'Sprache': '界面语言',
     'Daten': '数据', 'Exportieren': '导出', 'Importieren': '导入',
     'Fortschritt wird nur in diesem Browser gespeichert. Mit Export/Import auf ein anderes Gerät übertragen.': '进度只保存在当前浏览器中。可通过导出 / 导入转移到其他设备。',

@@ -36,6 +36,24 @@
       return id;
     });
   });
+  // dictation: every complete single sentence of the bank (5–16 words, C1 up to 24), once each.
+  // Stored as its own item (":d") so its review schedule is separate from the original exercise.
+  var dictSeen = {};
+  units.forEach(function (u) {
+    u.dIds = [];
+    u.ids.forEach(function (id) {
+      var ex = itemIndex[id].ex;
+      if (ex.t === 'm') return;
+      var s = ex.t === 'o' ? ex.a : G.fullSentence(ex);
+      if (!s || dictSeen[s] || !/[.!?]$/.test(s) || /[–—…()=]/.test(s) || /[.!?]\s+\S/.test(s)) return;
+      var words = s.split(/\s+/).length;
+      if (words < 5 || words > (u.level === 'C1' ? 24 : 16)) return;
+      dictSeen[s] = true;
+      var did = id + ':d';
+      itemIndex[did] = { unit: u, ex: { t: 'd', a: s, src: id, e: ex.e, zh: ex.t === 'o' ? ex.zh : undefined } };
+      u.dIds.push(did);
+    });
+  });
   G.units = units;
   G.itemIndex = itemIndex;
   G.chapters = chapters;
@@ -306,10 +324,24 @@
     G.lesson.start({ kind: 'practice', ids: G.shuffle(pick) });
   }
 
+  // dictation practice: 10 sentences from units already studied, sentences answered correctly first
+  function dictationPool() {
+    var pool = [];
+    units.forEach(function (u) { if (S.unit(u.id).lessons > 0) pool = pool.concat(u.dIds || []); });
+    return pool;
+  }
+  function startDictation() {
+    var pool = G.shuffle(dictationPool());
+    var known = pool.filter(function (id) { var it = S.item(itemIndex[id].ex.src); return it && it.c > 0; });
+    var pick = known.slice(0, 10);
+    pool.forEach(function (id) { if (pick.length < 10 && pick.indexOf(id) < 0) pick.push(id); });
+    if (pick.length) G.lesson.start({ kind: 'practice', ids: pick });
+  }
+
   function unseenWordItems() {
     var seen = S.state.words || {};
     return Object.keys(itemIndex).filter(function (id) {
-      return itemIndex[id].ex.t !== 'm' && G.vocab.of(id).some(function (w) { return !seen[w.id]; });
+      return itemIndex[id].ex.t !== 'm' && itemIndex[id].ex.t !== 'd' && G.vocab.of(id).some(function (w) { return !seen[w.id]; });
     });
   }
   function startWords() {
@@ -445,6 +477,7 @@
         (due ? '<button class="btn bad" data-act="review">' + t('Start') + '</button>' : '') +
       '</div>' +
       (started.length ? '<button class="row" data-act="mixed"><span class="grow"><span class="t">' + t('Gemischtes Training') + '</span><span class="s" style="display:block">' + t(started.length === 1 ? '{n} Einheit' : '{n} Einheiten', { n: started.length }) + '</span></span><span class="btn small">' + t('Start') + '</span></button>' : '') +
+      (started.length && G.sound.canSpeak() && G.sound.hasGermanVoice() && dictationPool().length ? '<button class="row" data-act="dict"><span class="grow"><span class="t">' + t('Diktat') + '</span><span class="s" style="display:block">' + t('{n} Sätze', { n: 10 }) + '</span></span><span class="btn small">' + t('Start') + '</span></button>' : '') +
       (started.length ? '<h2 class="section-title">' + t('Einheiten') + '</h2><div class="list">' + started.map(function (u) {
         var m = Math.round(mastery(u) * 100);
         return '<button class="row" data-u="' + u.id + '"><span class="tag' + lvc(u.level) + '">' + u.ch + '</span>' +
@@ -456,6 +489,7 @@
     wireNotebook();
     var r = view.querySelector('[data-act="review"]'); if (r) r.onclick = startReview;
     var m = view.querySelector('[data-act="mixed"]'); if (m) m.onclick = startMixed;
+    var dc = view.querySelector('[data-act="dict"]'); if (dc) dc.onclick = startDictation;
     view.querySelectorAll('[data-u]').forEach(function (b) { b.onclick = function () { unitSheet(unitById[b.dataset.u]); }; });
   }
 
@@ -589,7 +623,7 @@
       }).join('') + '</div>' +
       (unseenItems ? '<button class="row" data-act="words-go"><span class="grow"><span class="t">' + t('Neue Wörter üben') + '</span><span class="s" style="display:block">' + t('{n} Übungen mit neuen Wörtern', { n: unseenItems }) + '</span></span><span class="btn small">' + t('Start') + '</span></button>' : '') +
       '<div class="word-tools">' +
-        '<input type="search" class="search" placeholder="' + t('Suchen') + '" aria-label="' + t('Suchen') + '" value="' + esc(wf.q) + '">' +
+        '<input type="search" class="search" enterkeyhint="search" placeholder="' + t('Suchen') + '" aria-label="' + t('Suchen') + '" value="' + esc(wf.q) + '">' +
         '<div class="word-filter">' +
           '<div class="ltabs" role="tablist">' + [['all', t('Alle'), ws.total]].concat(levels.map(function (lv) { return [lv, lv, (ws.by[lv] || {}).total || 0]; })).map(function (o) {
             return '<button role="tab" aria-selected="' + (wf.lv === o[0]) + '" data-wf="lv" data-v="' + o[0] + '">' + o[1] + '<small>' + o[2] + '</small></button>';
@@ -777,6 +811,27 @@
     else { refresh(); window.scrollTo(0, 0); }
   }
   G.app = { refresh: refresh, toast: toast, home: home };
+  // phones: while the keyboard is open, newer iOS shrinks the page and fixed bars ride up on top of it.
+  // Hide the bottom tab bar (and sticky buttons) as long as a text field outside the lesson has focus.
+  (function () {
+    var touch = window.matchMedia('(hover: none) and (pointer: coarse)');
+    function isField(el) { return el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && /^(text|search|email|number)?$/.test(el.type || ''))); }
+    function sync() {
+      var a = document.activeElement;
+      document.documentElement.classList.toggle('kb-open', touch.matches && isField(a) && !a.closest('#lesson'));
+    }
+    document.addEventListener('focusin', function (e) {
+      sync();
+      // the search box moves to the top so the results have room above the keyboard
+      if (touch.matches && e.target.classList && e.target.classList.contains('search'))
+        setTimeout(function () { e.target.scrollIntoView({ block: 'start' }); }, 250);
+    });
+    document.addEventListener('focusout', function () { setTimeout(sync, 60); });
+    // the keyboard's search key closes the keyboard so the results are fully visible
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('search')) { e.preventDefault(); e.target.blur(); }
+    });
+  })();
   if (G.backup) G.backup.onChange(function () { if (/settings/.test(location.hash)) refresh(); });
   document.addEventListener('touchstart', function () {}, { passive: true });
   document.addEventListener('contextmenu', function (e) {

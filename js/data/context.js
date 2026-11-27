@@ -162,7 +162,7 @@ i {Grafikbeschreibung: Ergänze.} Im gleichen Zeitraum ging die Zahl der Pendler
 `);
   X('c1-praepositionen', `
 c {Uni-Info: Was passt?} ___ der Prüfungsordnung dürfen Sie eine Prüfung höchstens dreimal wiederholen. | Gemäß | Mangels | Zwecks | Seitens # 按照 → gemäß。
-i {Zeitungsmeldung: Ergänze.} ___ fehlender Fachkräfte mussten mehrere Kitas ihre Öffnungszeiten verkürzen. | Mangels;Wegen;Aufgrund | 由于缺乏 # mangels + Gen。
+i {Zeitungsmeldung: Ergänze.} ___ qualifizierter Fachkräfte mussten mehrere Kitas ihre Öffnungszeiten verkürzen. | Mangels | 由于缺乏 # mangels + Gen（无冠词复数）：mangels qualifizierter Fachkräfte = 因为缺少合格的专业人员。注意不要说 mangels fehlender …（重复否定）。
 `);
   X('c1-verbenpraep', `
 c {Studie: Was passt?} Die Studie kommt zu dem Ergebnis, dass soziale Medien erheblich ___ Meinungsbildung junger Menschen beitragen. | zur | an der | für die | auf die # beitragen zu。

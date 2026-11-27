@@ -401,7 +401,6 @@ informieren|通知|B1|v|
 befragen|询问、调查|B2|v|befragt
 erheben|收集（数据）|C1|v|erhoben
 verallgemeinern|概括|C1|v|
-vorher·sehen|预见|C1|v|
 handeln|行动；涉及|B2|v|handelt
 gelten|有效；被视为|B2|v|gilt,galt,gegolten
 bedürfen|需要|C1|v|bedarf

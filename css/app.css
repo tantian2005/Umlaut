@@ -1040,3 +1040,30 @@ html { scrollbar-gutter: stable; }
 .explain .pairs div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 7px 12px; border-radius: 10px; background: var(--surface-2); font-size: 14px; }
 .explain .pairs b { color: var(--ink); }
 .explain .pairs span { color: var(--ink-2); }
+/* keyboard open outside a lesson (phone): no bottom tab bar riding on top of the keyboard */
+@media (max-width: 700px) {
+  html.kb-open .sidebar, html.kb-open .sticky-cta { display: none; }
+  html.kb-open .view { padding-bottom: 24px; }
+  .search { scroll-margin-top: calc(var(--tb, 64px) + 12px); }
+}
+/* dictation: big speaker + small slow button side by side (left, bottom-aligned), large writing area */
+.dict-play { display: flex; align-items: flex-end; gap: 14px; margin: 4px 0 22px; }
+.dict-play .play {
+  display: grid; place-items: center; flex: none; cursor: pointer;
+  width: 96px; height: 96px; border-radius: 22px;
+  border: 0; background: var(--primary); color: #fff; box-shadow: 0 6px 0 var(--primary-deep);
+}
+.dict-play .play svg { width: 46px; height: 46px; fill: currentColor; }
+.dict-play .play.slow { width: 64px; height: 64px; border-radius: 18px; box-shadow: 0 5px 0 var(--primary-deep); }
+.dict-play .play.slow svg { width: 34px; height: 34px; }
+.dict-play .play:active { transform: translateY(5px); box-shadow: none; }
+.tr-input.dict-input { min-height: 150px; background: var(--surface-2); border-color: var(--line); }
+.tr-input.dict-input:focus { background: var(--surface); }
+@media (max-width: 700px) {
+  .lesson.kb .dict-play { margin: 0 0 10px; }
+  .lesson.kb .dict-play .play { width: 64px; height: 64px; border-radius: 18px; }
+  .lesson.kb .dict-play .play svg { width: 32px; height: 32px; }
+  .lesson.kb .dict-play .play.slow { width: 48px; height: 48px; border-radius: 14px; }
+  .lesson.kb .dict-play .play.slow svg { width: 26px; height: 26px; }
+  .lesson.kb .tr-input.dict-input { min-height: 96px; }
+}

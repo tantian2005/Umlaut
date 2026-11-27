@@ -50,7 +50,7 @@
   // ---------- picking ----------
   // difficulty grows lesson by lesson: choice/matching → gap filling & sentence building → translation
   var STAGE_BONUS = [{ c: 3, m: 2, i: 1, o: 0 }, { c: 1, m: 0.5, i: 2.5, o: 2.5 }, { c: 0, m: 0, i: 2.5, o: 3 }];
-  var RANK = { m: 0, c: 1, i: 2, o: 3 };
+  var RANK = { m: 0, c: 1, i: 2, o: 3, d: 3.5 };
   function stageOf(unit) { return Math.min(S.unit(unit.id).lessons, 2); }
   function pickForUnit(unit) {
     var ids = unit.ids.slice();
@@ -78,6 +78,13 @@
       var t = G.itemIndex[x.id].ex.t;
       if (pick.length < size && pick.indexOf(x.id) < 0 && t !== 'm') pick.push(x.id);
     });
+    // dictation: from the second lesson on, sentences of this unit that were already answered correctly
+    var nD = stageOf(unit) === 0 || !canDictate() ? 0 : stageOf(unit);
+    if (nD && unit.dIds) {
+      var pool = unit.dIds.filter(function (id) { var src = S.item(G.itemIndex[id].ex.src); return src && src.c > 0; });
+      var dPick = G.shuffle(pool).slice(0, nD);
+      if (dPick.length) pick = pick.slice(0, Math.max(1, pick.length - dPick.length)).concat(dPick);
+    }
     // easy → hard inside the lesson
     var key = {};
     pick.forEach(function (id) { key[id] = RANK[G.itemIndex[id].ex.t] + Math.random() * 0.9; });
@@ -293,7 +300,8 @@
     if (sn.first) { S.restoreItem(e.id, sn.before); S.markItem(e.id, true); L.firstOK++; }
     delete L.wrongIds[e.id];
     L.queue = L.queue.filter(function (q) { return q !== e; });
-    L.solved++;
+    // in a test a wrong answer was already counted as done (it is not repeated)
+    if (L.kind !== 'test') L.solved++;
     L.combo++;
     S.save();
     setProgress();
@@ -315,7 +323,7 @@
       ? '<button class="say" data-act="say" aria-label="' + tr('Vorlesen') + '">' + ICON.speak + '</button>' : '';
     var head = tr(ok ? PRAISE[Math.floor(Math.random() * PRAISE.length)] : part ? 'Teilweise richtig' : (softWrong ? 'Fast!' : 'Richtige Lösung:'));
     if (part) { var pta = root.querySelector('.tr-input'); if (pta) { pta.classList.remove('bad'); pta.classList.add('part'); } }
-    var ovr = !ok && !softWrong && L.view.override ? '<button class="ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '';
+    var ovr = !ok && !softWrong && L.view.override && !(L.partial && L.partial.strict) ? '<button class="ovr" data-act="ovr">' + tr('Ich hatte recht') + '</button>' : '';
     var ans = '';
     if (!ok && !softWrong && ex.t === 'm') { head = tr('Fast!'); ans = briefOf(ex) ? '<p class="exp brief">' + briefOf(ex) + '</p>' : ''; }
     else if (!ok && !softWrong) ans = '<p class="ans">' + esc(answerText(ex)) + speak + '</p>';
@@ -365,19 +373,21 @@
   // explanation sheet: grammar note, Chinese meaning, why each wrong option is wrong, words
   function explainHTML(ex, words, full) {
     var why = whyList(ex), detail = detailOf(ex);
+    // the sentence's meaning (not for translation/word-order items: their prompt already is the Chinese)
+    var zh = ex.t === 'o' ? '' : (ex.zh || (G.SENT_ZH && full && G.SENT_ZH[full]) || '');
     var pairs = ex.t === 'm' ? '<div class="pairs">' + ex.pairs.map(function (p) {
       return '<div><b lang="de">' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>';
     }).join('') + '</div>' : '';
     var vocab = words.length ? '<div class="vocab">' + words.map(function (w) {
       return '<button class="wchip" data-w="' + esc(w.de) + '"><b lang="de">' + esc(w.de) + '</b><span>' + esc(w.zh) + '</span></button>';
     }).join('') + '</div>' : '';
-    if (!detail && !why && !vocab && !pairs) return '';
+    if (!detail && !why && !vocab && !pairs && !zh) return '';
     var speak = full && S.state.settings.tts && G.sound.canSpeak()
       ? '<button class="say" data-act="say" aria-label="' + tr('Vorlesen') + '">' + ICON.speak + '</button>' : '';
     return '<div class="sheet-head"><h2>' + tr('Erklärung') + '</h2><button class="icon-btn" data-close aria-label="' + tr('Schließen') + '">' + ICON_X + '</button></div>' +
       '<div class="explain">' +
         (full ? '<p class="ex-sent" lang="de">' + esc(full) + speak + '</p>' : '') +
-        (ex.zh && ex.t !== 'o' ? '<p class="tr">' + esc(ex.zh) + '</p>' : '') +
+        (zh ? '<p class="tr">' + esc(zh) + '</p>' : '') +
         (detail ? '<p class="exp">' + detail + '</p>' : '') + pairs +
         (why ? '<h3>' + tr('Andere Optionen') + '</h3>' + why : '') +
         (vocab ? '<h3>' + tr('Wörter') + '</h3>' + vocab : '') +
@@ -400,7 +410,7 @@
   function answerText(ex) {
     if (ex.t === 'c') return ex.q && ex.q.indexOf('___') >= 0 ? fillGaps(ex.q, ex.o[0]) : ex.o[0];
     if (ex.t === 'i') return fillGaps(ex.q, arr(ex.a)[0]);
-    if (ex.t === 'o') return ex.a;
+    if (ex.t === 'o' || ex.t === 'd') return ex.a;
     if (ex.t === 'm') return ex.pairs.map(function (p) { return p[0] + ' – ' + p[1]; }).join(' · ');
     return '';
   }
@@ -426,7 +436,7 @@
   function titleFor(ex, unit) {
     if (ex.p) return tr(ex.p);
     if (unit && unit.cPrompt && ex.t === 'c') return tr(unit.cPrompt);
-    return tr({ c: 'Wähle die richtige Antwort.', i: 'Ergänze die Lücke.', o: 'Bilde den Satz.', m: 'Finde die Paare.' }[ex.t]);
+    return tr({ c: 'Wähle die richtige Antwort.', i: 'Ergänze die Lücke.', o: 'Bilde den Satz.', m: 'Finde die Paare.', d: 'Schreib, was du hörst.' }[ex.t]);
   }
 
   function sentenceHTML(q, gapFn) {
@@ -452,6 +462,7 @@
     }
     if (ex.t === 'o') return viewOrder(wrap, head, ex);
     if (ex.t === 'm') return viewMatch(wrap, head, ex);
+    if (ex.t === 'd') return viewDictation(wrap, head, ex);
     throw new Error('unknown exercise type ' + ex.t);
   }
 
@@ -478,12 +489,85 @@
       }
     return d[m][n];
   }
-  function toks(s) { return normSentence(s).split(' ').filter(Boolean); }
+  // zum = zu dem, im = in dem … : both spellings count as the same words
+  var CONTRACT = { zum: 'zu dem', zur: 'zu der', im: 'in dem', ins: 'in das', am: 'an dem', ans: 'an das', beim: 'bei dem', vom: 'von dem', aufs: 'auf das', uebers: 'ueber das', fuers: 'fuer das', durchs: 'durch das', unterm: 'unter dem' };
+  function toks(s) {
+    return normSentence(s).split(' ').filter(Boolean).map(function (w) { return CONTRACT[w] || w; }).join(' ').split(' ');
+  }
+  // German allows another constituent in front as long as the verb stays second:
+  // "Ich habe gestern … gesehen" → "Gestern habe ich … gesehen". Build those inversions from a reference.
+  function inversions(a) {
+    var out = [];
+    for (var k = 1; k <= 3 && k < a.length - 2; k++) {
+      var S = a.slice(0, k), V = a[k], rest = a.slice(k + 1);
+      for (var i = 0; i < rest.length - 1; i++) for (var n = 1; n <= 5 && i + n <= rest.length - 1; n++) {
+        var C = rest.slice(i, i + n);
+        out.push(C.concat([V], S, rest.slice(0, i), rest.slice(i + n)).join(' '));
+      }
+    }
+    return out;
+  }
+  // adverbs that may stand in different places of the middle field ("ich habe gestern meinen Freund …" = "… meinen Freund gestern …")
+  var ADV = /^(gestern|heute|morgen|vorgestern|uebermorgen|jetzt|nun|bald|spaeter|frueher|damals|immer|oft|manchmal|selten|nie|niemals|schon|bereits|noch|auch|nicht|sehr|gern|gerne|lieber|leider|endlich|sofort|gleich|wieder|zusammen|vielleicht|wahrscheinlich|sicher|bestimmt|natuerlich|eigentlich|wirklich|ziemlich|fast|kaum|nur|erst|dort|hier|da|abends|morgens|mittags|nachts|jeden|letzte|letzten|naechste|naechsten|zuerst|dann|danach|trotzdem|deshalb|deswegen|also|ausserdem|dabei|darum|allerdings|jedoch|wohl|doch|ja|mal|halt|eben)$/;
+  var PREP = /^(in|an|auf|mit|zu|von|bei|nach|aus|fuer|ueber|unter|vor|hinter|neben|zwischen|durch|gegen|ohne|um|seit|wegen|trotz|waehrend|statt|bis)$/;
+  // position of the finite verb: an auxiliary/modal among the first words, else after a one-word
+  // subject (or after article + noun)
+  function verbPos(a) {
+    for (var k = 1; k <= 3 && k < a.length; k++) if (AUX.test(a[k])) return k;
+    return DETERMINERS.test(a[0]) ? 2 : 1;
+  }
+  function adverbMoves(a) {
+    var out = [], v = verbPos(a);
+    for (var i = v + 1; i < a.length - 1; i++) {
+      if (!ADV.test(a[i])) continue;
+      var b = a.slice(0, i).concat(a.slice(i + 1));
+      // never between an article / preposition and what follows it ("meinen gestern Freund")
+      for (var j = v + 1; j < b.length; j++) if (j !== i && !DETERMINERS.test(b[j - 1]) && !PREP.test(b[j - 1])) out.push(b.slice(0, j).concat([a[i]], b.slice(j)));
+    }
+    return out;
+  }
+  function sameOrderVariant(a, u) {
+    var uj = u.join(' '), forms = [a].concat(adverbMoves(a));
+    for (var i = 0; i < forms.length; i++) {
+      if (forms[i].join(' ') === uj) return i > 0;
+      if (inversions(forms[i]).indexOf(uj) >= 0) return true;
+    }
+    return inversions(u).indexOf(a.join(' ')) >= 0;
+  }
+  // word-order mistakes that are certainly wrong (no "German is flexible" hint, no "I was right" button):
+  // an article or preposition separated from the word it belongs to, or a statement that starts with its verb
+  function clearOrderError(a, u, src) {
+    for (var i = 0; i < a.length - 1; i++) {
+      if (!DETERMINERS.test(a[i]) && !PREP.test(a[i])) continue;
+      if (a.indexOf(a[i]) !== a.lastIndexOf(a[i])) continue;   // word occurs twice: can't tell which one
+      var j = u.indexOf(a[i]);
+      if (j < 0 || u[j + 1] !== a[i + 1]) return true;
+    }
+    if (/\?\s*$/.test(String(src))) return false;   // questions: leave it to the learner
+    // the finite verb (an auxiliary or modal in the reference) must be second: only one complete phrase may stand before it
+    for (var k = 1; k <= 3 && k < a.length; k++) {
+      // the verb is known for sure when it is an auxiliary/modal, or when the sentence starts with a pronoun
+      if (!AUX.test(a[k]) && !(k === 1 && /^(ich|du|er|sie|es|wir|ihr|man)$/.test(a[0]))) continue;
+      var p = u.indexOf(a[k]);
+      if (p === 0) return true;
+      if (p > 0 && a.join(' ').indexOf(u.slice(0, p).join(' ')) < 0) return true;
+      // the participle / infinitive closes the sentence
+      var last = a[a.length - 1];
+      if (AUX.test(a[k]) && !AUX.test(last) && u[u.length - 1] !== last && u.indexOf(last) >= 0) return true;
+      break;
+    }
+    return false;
+  }
+  var AUX = /^(habe|hast|hat|haben|habt|hatte|hattest|hatten|bin|bist|ist|sind|seid|war|warst|waren|wird|werde|wirst|werden|werdet|wurde|wurden|kann|kannst|koennen|konnte|konnten|muss|musst|muessen|musste|mussten|will|willst|wollen|wollte|wollten|soll|sollst|sollen|sollte|sollten|darf|darfst|duerfen|durfte|moechte|moechtest|moechten|wuerde|wuerdest|wuerden|haette|haetten|waere|waeren|koennte|koennten|muesste|sollte)$/;
   function gradeTranslation(value, accepted) {
-    var u = toks(value), best = null;
+    var u = toks(value), uj = u.join(' '), best = null;
+    if (!u.length) return { ok: false };
     for (var k = 0; k < accepted.length; k++) {
       var a = toks(accepted[k]);
-      if (a.join(' ') === u.join(' ')) return { ok: true };
+      if (a.join(' ') === uj) return { ok: true };
+      // valid word-order variant (fronted adverbial, subject after the verb) → correct
+      if (u.length === a.length && sameOrderVariant(a, u))
+        return { ok: true, note: tr('Andere Wortstellung, auch richtig. Musterlösung: {a}', { a: accepted[k] }) };
       var r = { a: a, src: accepted[k], score: 0 };
       if (a.length === u.length) {
         var typos = [], forms = [], other = [];
@@ -500,8 +584,21 @@
         r.score = a.length - typos.length * 0.2 - forms.length - other.length * 1.5;
         r.kind = (!forms.length && !other.length) ? 'typo' : (!other.length ? 'form' : 'words');
         r.mark = typos.concat(forms, other);
+      } else if (Math.abs(a.length - u.length) === 1) {
+        // exactly one word missing or one word too many
+        var longer = a.length > u.length ? a : u, shorter = a.length > u.length ? u : a, sj = shorter.join(' ');
+        for (var j = 0; j < longer.length; j++) {
+          if (longer.slice(0, j).concat(longer.slice(j + 1)).join(' ') !== sj) continue;
+          r.score = a.length - 1;
+          if (a.length > u.length) { r.kind = 'missing'; r.mark = []; r.word = a[j]; }
+          else { r.kind = 'extra'; r.mark = [j]; }
+          break;
+        }
+        if (!r.kind) r.score = -99;
       } else r.score = -99;
-      if (u.slice().sort().join(' ') === a.slice().sort().join(' ')) { r.kind = 'order'; r.score = a.length - 0.5; r.mark = []; }
+      if (u.slice().sort().join(' ') === a.slice().sort().join(' ')) {
+        r.kind = clearOrderError(a, u, accepted[k]) ? 'orderWrong' : 'order'; r.score = a.length - 0.5; r.mark = [];
+      }
       if (!best || r.score > best.score) best = r;
     }
     if (!best || !best.kind || best.kind === 'words' && best.mark.length > Math.ceil(best.a.length / 3)) return { ok: false };
@@ -509,8 +606,93 @@
     if (raw.length !== u.length) raw = u;
     var shown = raw.map(function (w, i) { return best.mark && best.mark.indexOf(i) >= 0 ? '<mark>' + esc(w) + '</mark>' : esc(w); }).join(' ');
     if (best.kind === 'typo') return { ok: true, note: tr('Schreibweise: {a}', { a: best.src }) };
-    var NOTE = { form: 'Fast richtig: Artikel oder Endung prüfen.', order: 'Alle Wörter stimmen, nur die Wortstellung nicht.', words: 'Teilweise richtig.' };
-    return { ok: false, partial: true, note: tr(NOTE[best.kind]), diff: shown };
+    var NOTE = { form: 'Fast richtig: Artikel oder Endung prüfen.', order: 'Alle Wörter stimmen, nur die Wortstellung nicht.', orderWrong: 'Alle Wörter stimmen, aber die Wortstellung ist falsch.', words: 'Teilweise richtig.', extra: 'Ein Wort zu viel.' };
+    var missing = best.kind === 'missing' && (String(best.src).split(/\s+/).map(function (w) { return w.replace(/[.,!?;:„“"]/g, ''); })
+      .filter(function (w) { return translit(w.toLowerCase()) === best.word; })[0] || best.word);
+    var msg = missing ? tr('Es fehlt ein Wort: {a}', { a: missing }) : tr(NOTE[best.kind]);
+    return { ok: false, partial: true, note: msg, diff: shown, strict: best.kind === 'orderWrong' };
+  }
+
+  // ---------- dictation ----------
+  function canDictate() { return S.state.settings.tts && G.sound.canSpeak() && G.sound.hasGermanVoice(); }
+  // turtle = slow playback
+  var ICON_SLOW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 15.2C2.6 10.6 6 7.5 10.2 7.5s7.6 3.1 8 7.7z"/><circle cx="20.2" cy="12.6" r="2.1"/><path d="M4.4 16.2h3l-.7 2.6H4.1zM12.8 16.2h3l.3 2.6h-2.6zM1 14.8l1.6-.6.3 1.2z"/><path fill="rgba(255,255,255,.35)" d="M10.2 9.2 12.6 11l-.9 2.8H8.7L7.8 11z"/></svg>';
+  function viewDictation(wrap, head, ex) {
+    wrap.innerHTML = head +
+      '<div class="dict-play">' +
+        '<button class="play" data-rate="0.95" aria-label="' + tr('Normal') + '">' + ICON.speak + '</button>' +
+        '<button class="play slow" data-rate="0.6" aria-label="' + tr('Langsam') + '">' + ICON_SLOW + '</button>' +
+      '</div>' +
+      '<textarea class="tr-input dict-input" lang="de" rows="4" aria-label="' + tr('Schreib, was du hörst.') + '" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="done"></textarea>' +
+      '<div class="keys" aria-label="' + tr('Sonderzeichen') + '">' +
+      UMLAUTS.map(function (c) { return '<button type="button" tabindex="-1" data-k="' + c + '">' + c + '</button>'; }).join('') + '</div>';
+    var ta = wrap.querySelector('.tr-input');
+    function play(rate) { G.sound.speak(ex.a, rate); }
+    wrap.querySelectorAll('.play').forEach(function (b) {
+      b.addEventListener('mousedown', function (e) { e.preventDefault(); });   // keep the keyboard open
+      b.onclick = function () { play(+b.dataset.rate); };
+    });
+    setTimeout(function () { if (L && L.view && L.view.el === wrap && !L.answered) play(0.95); }, 350);
+    ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; updateCheck(); });
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (L.answered) next(); else check(); }
+    });
+    function insert(ch) {
+      if (L.answered) return;
+      var s = ta.selectionStart, en = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s) + ch + ta.value.slice(en);
+      ta.focus(); ta.setSelectionRange(s + 1, s + 1); updateCheck();
+    }
+    wrap.querySelectorAll('.keys button').forEach(function (b) {
+      b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      b.onclick = function () { insert(b.dataset.k); };
+    });
+    return {
+      el: wrap, insert: insert,
+      focus: function () { if (window.matchMedia('(hover: hover)').matches) ta.focus({ preventScroll: true }); },
+      ready: function () { return ta.value.trim().length > 0; },
+      grade: function () { return gradeDictation(ta.value, ex.a); },
+      reveal: function (ok) { ta.readOnly = true; ta.classList.add(ok ? 'ok' : 'bad'); },
+      key: function () { return false; }
+    };
+  }
+  // Dictation is graded on spelling: same words in the same order; capitals count; punctuation does not.
+  function dWords(s) {
+    return String(s).replace(/[„“”"«»‚‘’]/g, '').split(/\s+/).map(function (w) { return w.replace(/^[(\[]+|[.,!?;:)\]]+$/g, ''); }).filter(Boolean);
+  }
+  function gradeDictation(value, ref) {
+    var u = dWords(value), a = dWords(ref);
+    if (!u.length) return { ok: false };
+    var loose = function (w) { return translit(w.toLowerCase()); };
+    // word-level alignment (Levenshtein with backtrace)
+    var m = a.length, n = u.length, d = [], i, j;
+    for (i = 0; i <= m; i++) { d[i] = [i]; }
+    for (j = 0; j <= n; j++) d[0][j] = j;
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (loose(a[i - 1]) === loose(u[j - 1]) ? 0 : 1));
+    var marks = [], missing = [], caseMarks = [], spelled = false;
+    i = m; j = n;
+    while (i > 0 || j > 0) {
+      if (i > 0 && j > 0 && d[i][j] === d[i - 1][j - 1] + (loose(a[i - 1]) === loose(u[j - 1]) ? 0 : 1)) {
+        if (loose(a[i - 1]) !== loose(u[j - 1])) marks.push(j - 1);
+        else if (a[i - 1] !== u[j - 1]) {
+          if (a[i - 1].toLowerCase() === u[j - 1].toLowerCase()) caseMarks.push(j - 1);   // Gross-/Kleinschreibung
+          else spelled = true;                                                               // ae for ä, ss for ß
+        }
+        i--; j--;
+      } else if (i > 0 && d[i][j] === d[i - 1][j] + 1) { missing.unshift(a[i - 1]); i--; }
+      else { marks.push(j - 1); j--; }
+    }
+    var errors = marks.length + missing.length + caseMarks.length;
+    if (!errors) return spelled ? { ok: true, note: tr('Schreibweise: {a}', { a: ref }) } : { ok: true };
+    if (d[m][n] > Math.max(1, Math.ceil(m / 4))) return { ok: false };
+    var all = marks.concat(caseMarks);
+    var shown = u.map(function (w, k) { return all.indexOf(k) >= 0 ? '<mark>' + esc(w) + '</mark>' : esc(w); }).join(' ');
+    var notes = [];
+    if (marks.length) notes.push(tr('{n} Fehler', { n: marks.length }));
+    if (missing.length) notes.push(tr('Es fehlt: {a}', { a: missing.join(', ') }));
+    if (caseMarks.length) notes.push(tr('Groß- und Kleinschreibung prüfen.'));
+    return { ok: false, partial: true, note: notes.join(' '), diff: shown, strict: true };
   }
 
   function viewTranslate(wrap, head, ex) {
@@ -949,9 +1131,7 @@
     root.hidden = true;
     root.style.height = root.style.top = ''; lastH = lastTop = 0; root.classList.remove('kb');
     root.innerHTML = '';
-    root.style.height = ''; root.style.top = ''; root.classList.remove('kb');
     document.body.style.overflow = '';
-    if ('speechSynthesis' in window) speechSynthesis.cancel();
     if (history.state && history.state.lesson) { closingNav = true; pendingHome = goHome; history.back(); }
     else if (goHome) G.app.home();
     G.app.refresh();
@@ -990,6 +1170,6 @@
     start: start,
     get active() { return !!L; },
     pickForUnit: pickForUnit,
-    _norm: norm, _gradeTr: gradeTranslation
+    _norm: norm, _gradeTr: gradeTranslation, _cur: function () { return L && L.cur && !L.finished ? L.cur.id : null; }
   };
 })();

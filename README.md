@@ -1,65 +1,77 @@
 # Umlaut
 
-Deutsche Grammatik B1–B2 lernen — Lernpfad, Lektionen, Wiederholung falscher Antworten, Serie & XP.
-Läuft im Browser auf Computer und Handy, offline-fähig (PWA), ohne Build-Schritt.
+学德语语法（B1 到 C1），目标是 TestDaF 4 分的语法水平。有学习路径、分课练习、错题复习、连续天数和经验值。
+在电脑和手机的浏览器里都能用，可以添加到主屏幕离线使用（PWA），不需要构建步骤。
 
-## Starten
+在线使用：<https://tantian2005.github.io/Umlaut/>
 
-- Direkt: `index.html` doppelklicken (alles außer Offline-Modus funktioniert).
-- Lokaler Server (für PWA / Offline):
+## 运行
+
+- 直接双击 `index.html` 就能用（离线模式除外）。
+- 本地服务器（PWA / 离线功能需要）：
 
   ```
   python -m http.server 8767
   ```
 
-  dann <http://localhost:8767> öffnen.
-- Handy: Ordner auf einen statischen Host legen (z. B. GitHub Pages) und im Browser „Zum Startbildschirm hinzufügen“.
+  然后打开 <http://localhost:8767>。
+- 手机：把文件夹放到静态网站托管上（例如 GitHub Pages），在浏览器里选择「添加到主屏幕」。
 
-## Inhalt
+## 内容
 
-Lernpfad nach Goethe-Kursstufen, Ziel: Grammatik auf TestDaF-Niveau TDN 4.
+学习路径参照歌德学院的课程级别。
 
-| Kapitel | Thema | Einheiten | Übungen |
+| 章节 | 主题 | 单元 | 练习 |
 |---|---|---|---|
-| B1.1 | Grundlagen festigen | 8 | 241 |
-| B1.2 | Sätze erweitern | 8 | 236 |
-| B2.1 | Argumentieren & vermuten | 9 | 253 |
-| B2.2 | Schriftsprache | 8 | 223 |
-| C1.1 | Wissenschaftssprache (TestDaF) | 5 | 119 |
-| C1.2 | TestDaF-Schreiben | 5 | 117 |
+| B1.1 | 巩固基础（Grundlagen festigen） | 8 | 241 |
+| B1.2 | 扩展句子（Sätze erweitern） | 8 | 236 |
+| B2.1 | 论证与推测（Argumentieren & vermuten） | 9 | 253 |
+| B2.2 | 书面语（Schriftsprache） | 8 | 223 |
+| C1.1 | 学术语言（Wissenschaftssprache） | 5 | 149 |
+| C1.2 | TestDaF 写作（TestDaF-Schreiben） | 5 | 147 |
 
-43 Einheiten, 1189 Übungen (Auswahl, Lücke, Satzbau mit Drag & Drop, Paare, Übersetzung; Schwierigkeit steigt von Lektion zu Lektion), ein Abschnittstest pro Kapitel
-(15 Fragen, bestanden ab 80 %). Grammatik-Erklärungen auf Chinesisch, Oberfläche Deutsch / Chinesisch.
+- 43 个单元，1249 道练习，题型有：选择、填空、拖拽组句、配对、翻译、听写。难度逐课提高：先选择和配对，再填空和组句，最后翻译。
+- 每章有一次章节测试（15 题，80% 及格）。
+- 每道题都有中文解析：选择题会逐个说明错误选项错在哪里，配对题有详细讲解，选择题和填空题附整句中文翻译。
+- 翻译题判分会接受合法的语序变化（倒装、副词换位），能识别拼写小错、冠词词尾错误、多词或漏词，并给出部分正确的提示。
+- 听写：从题库中选出约 1000 句完整句子，可以正常速度或慢速朗读。课程第二课起会穿插听写题，复习页也有单独的听写练习。
+- 界面可切换德语 / 中文，有浅色和深色两种外观。
 
-Wortschatz: 446 Prüfungswörter (Goethe B1/B2, TestDaF), die alle in den Übungssätzen vorkommen. Nach jeder Antwort
-erscheinen die Schlüsselwörter mit Bedeutung; die Seite *Wörter* zeigt, welche schon geübt wurden.
+词汇：475 个考试词汇（歌德 B1/B2、TestDaF 学术词），全部出现在练习句子里。每次答题后会显示本题生词；「词汇」页可以看到哪些已经练过。
 
-## Struktur
-
-```
-index.html            App-Shell
-css/app.css           Styles (hell/dunkel, Desktop/Tablet/Handy)
-js/data/chapters.js   Kapitel und Reihenfolge der Einheiten
-js/data/dsl.js        Kompaktformat für Übungen (siehe Kommentar in der Datei)
-js/data/*.js          Einheiten: Erklärung (tip) + Übungen (ex); more-*.js ergänzen bestehende Einheiten
-js/data/words.js      Prüfungswortschatz (Lemma | 中文 | Niveau | Wortart | Formen)
-js/vocab.js           Erkennt Prüfungswörter in den Übungssätzen
-js/i18n.js            Oberflächentexte Deutsch / Chinesisch
-js/store.js           Fortschritt in localStorage, Leitner-Wiederholung
-js/lesson.js          Lektions-Engine
-js/app.js             Routing & Ansichten
-sw.js                 Offline-Cache (nach Änderungen CACHE-Version erhöhen)
-```
-
-## Übungen hinzufügen
-
-Am einfachsten im Kompaktformat, z. B. in `js/data/more-b1.js` (eine Zeile pro Übung):
+## 目录结构
 
 ```
-c Satz mit ___. | richtig | falsch | falsch | falsch # Erklärung
-i Satz mit ___. | Antwort;andere Antwort | Hinweis # Erklärung
-o 中文意思 | Deutscher Satz. | Variante # Erklärung
-m Aufgabe | links=rechts;links=rechts # 
+index.html               应用外壳
+css/app.css              样式（浅色 / 深色，电脑 / 平板 / 手机）
+js/data/chapters.js      章节和单元顺序
+js/data/dsl.js           练习的紧凑书写格式（说明见文件开头注释）
+js/data/*.js             各单元：语法讲解（tip）和练习（ex）；more-*.js、context.js、c1-plus.js 是对已有单元的补充
+js/data/why.js           选择题每个错误选项的解析
+js/data/match-notes.js   配对题的简短要点和详细讲解
+js/data/sent-zh.js       练习句子的中文翻译
+js/data/words.js         考试词汇（词条 | 中文 | 级别 | 词性 | 变形）
+js/vocab.js              在练习句子里识别考试词汇
+js/i18n.js               界面文字（德语 / 中文）
+js/store.js              学习进度（localStorage）和莱特纳间隔复习
+js/backup.js             自动备份到本地文件（Chrome / Edge）
+js/sound.js              音效和德语朗读
+js/lesson.js             答题引擎（各题型、判分、解析）
+js/app.js                路由和各个页面
+sw.js                    离线缓存（每次发布都要提高 CACHE 版本号）
 ```
 
-Fortschritt liegt nur im Browser; unter *Einstellungen → Daten* exportieren/importieren.
+## 添加练习
+
+最简单的是用紧凑格式，例如写在 `js/data/more-b1.js` 里，每行一道题：
+
+```
+c 带 ___ 的句子。 | 正确答案 | 错误选项 | 错误选项 | 错误选项 # 解析
+i 带 ___ 的句子。 | 答案;另一个可接受的答案 | 提示 # 解析
+o 中文意思 | 德语句子。 | 另一种语序 # 解析
+m 题目 | 左=右;左=右 # 解析
+```
+
+改完题目后要在浏览器里把所有题自动作答一遍，确认全部能判对。
+
+学习进度只保存在当前浏览器里；可以在「设置 → 数据」里导出 / 导入，或开启自动备份。
