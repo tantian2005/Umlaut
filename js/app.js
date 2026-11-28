@@ -709,22 +709,36 @@
       };
     });
     view.querySelector('[data-act="export"]').onclick = function () {
-      var name = 'umlaut-' + S.dayKey() + '.json';
-      var blob = new Blob([S.exportJSON()], { type: 'application/json' });
+      var name = 'umlaut-' + S.dayKey() + '.json', json = S.exportJSON();
       var touch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-      if (touch && window.File && navigator.canShare) {
-        var f = new File([blob], name, { type: 'application/json' });
-        if (navigator.canShare({ files: [f] })) {
-          navigator.share({ files: [f], title: 'Umlaut' }).catch(function () {});
-          return;
-        }
-      }
+      var file = null;
+      try { file = new File([json], name, { type: 'application/json' }); if (!(touch && navigator.canShare && navigator.canShare({ files: [file] }))) file = null; } catch (e) { file = null; }
+      if (!file) return download(name, json);
+      // phones: share sheet straight away
+      if (window.matchMedia('(max-width: 700px)').matches) return shareFile(file, name, json);
+      // tablets: iPad anchors its share popover to the button, but miscalculates it on a scrolled page
+      // (it ended up at the top edge). Offer the choice in a fixed sheet and share with the page at scroll 0.
+      var sh = openSheet(
+        '<div class="sheet-head"><h2>' + t('Exportieren') + '</h2><button class="icon-btn" data-close aria-label="' + t('Schließen') + '">' + UI.close + '</button></div>' +
+        '<div class="btn-col"><button class="btn block" data-x="share">' + t('Teilen') + '</button>' +
+        '<button class="btn ghost block" data-x="file">' + t('Datei herunterladen') + '</button></div>');
+      sh.el.querySelector('[data-x="file"]').onclick = function () { sh.close(); download(name, json); };
+      sh.el.querySelector('[data-x="share"]').onclick = function () {
+        var y = window.scrollY;
+        window.scrollTo(0, 0);
+        shareFile(file, name, json).then(function () { window.scrollTo(0, y); sh.close(); });
+      };
+    };
+    function shareFile(f, name, json) {
+      return navigator.share({ files: [f] }).catch(function (e) { if (!e || e.name !== 'AbortError') download(name, json); });
+    }
+    function download(name, json) {
       var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'umlaut-' + S.dayKey() + '.json';
+      a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+      a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-    };
+    }
     var bk = view.querySelector('[data-backup]');
     if (bk) bk.onclick = function () {
       var a = bk.dataset.backup, B = G.backup;
@@ -832,6 +846,11 @@
       if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('search')) { e.preventDefault(); e.target.blur(); }
     });
   })();
+  // no pinch / double-tap zoom (Safari ignores user-scalable=no, so stop its gesture events too)
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false });
+  });
+  document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
   if (G.backup) G.backup.onChange(function () { if (/settings/.test(location.hash)) refresh(); });
   document.addEventListener('touchstart', function () {}, { passive: true });
   document.addEventListener('contextmenu', function (e) {
